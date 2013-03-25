@@ -1,0 +1,436 @@
+<?php
+
+// implements hook_block_info().
+function player_profile_block_info() {
+    $blocks = array();
+    $blocks['player_profile_block'] = array(
+        'info' => t('player profile'),
+    );
+ 
+    return $blocks;
+}
+
+// implements hook_block_configure().
+function player_profile_block_configure($delta='') {
+    return array();
+}
+
+// implements hook_block_view().
+function player_profile_block_view($delta='') {
+  $block = array();
+ 
+  switch($delta) {
+    case 'player_profile_block' :
+        $block['content'] = drupal_get_form('player_profile_form');
+        break;
+    }
+ 
+    return $block;
+}
+function player_profile_form() {
+    $form = array();
+
+    $form['game'] = create_form_game();
+    $form['message'] = create_form_msg();
+    $form['status'] = create_form_status();
+    $form['target'] = create_form_targeting();
+
+    return $form;
+}
+
+// form create functions 
+function create_form_game() {
+    $game = get_player_game();
+    $form_game = array();
+
+    if (!isset($game->title)) {
+        $form_game['game_header'] = array(
+            '#type' => 'item',
+            '#title' => t('you are not part of any games yet'),
+        );
+
+        return $form_game;
+    }
+
+    date_default_timezone_set($game->field_time['und'][0]['timezone_db']);
+    $timeinterval = strtotime($game->field_time['und'][0]['value']) - time();
+    $timestring = "";
+
+    if ($timeinterval < 0) {
+        $timeinterval = strtotime($game->field_time['und'][0]['value2']) - time();
+        if ($timeinterval < 60)             $timestring = 'less than a minute left to go!';
+        else if ($timeinterval < 60*60)     $timestring = $timeinterval . 'minutes left to go!';
+        else if ($timeinterval < 60*60*24)  $timestring = date('h', $timeinterval) . 'hours left to go!';
+        else                                $timestring = round($timeinterval/(60*60*24)) . ' days left to go!';
+
+    } else {
+        if ($timeinterval < 60) 
+                $timestring = 'starts in under a minute!';
+        else if ($timeinterval < 60*60) 
+                $timestring = 'starts in ' . date('i', $timeinterval) . ' minutes!';
+        else if ($timeinterval < 60*60*24) 
+                $timestring = 'starts in ' . date('h', $timeinterval) . ' hours and ' . date('i', $timeinterval)  .' minutes!';
+        else    $timestring = 'starts in ' . round($timeinterval/(60*60*24)) . ' days.';
+    }
+
+    global $base_url;
+    $text = '<a href="' . $base_url . '/';
+    if(variable_get('clean_url', 0) != 1) $text = $text . '?q=';
+
+    $text = $text . 'node/' . $game->nid . '">' . $game->title . '</a>';
+    $form_game['game_content'] = array(
+        '#type' => 'item',
+        '#title' => t('playing in: ') . $text,
+        '#description' => $timestring,
+    );
+
+    variable_set('user_game', $game->nid);
+
+    return $form_game;
+}
+function create_form_msg() {
+    $message = get_organizer_msg();
+    $form_msg = array();
+
+    if (!isset($message->title)) {
+        $form_msg['message_header'] = array(
+            '#type' => 'item',
+            '#title' => t('no message from organizer'),
+        );
+
+        return $form_msg;
+    }
+
+    if (isset($message->field_body['und'])) {
+        $form_msg['message_content'] = array(
+            '#type' => 'item',
+            '#title' => t('message from organizer - ') . $message->title,
+            '#description' => $message->field_body['und'][0]['value'],
+        );
+    }
+
+    return $form_msg;
+}
+function create_form_status() {
+    $status = get_player_status();
+    $pending_death = strlen(strstr($status, 'have you been killed'));
+
+    if ($pending_death == 0) {
+        $form_status['player_status'] = array(
+            '#type' => 'item',
+            '#title' => t('status: ') . $status,
+        );
+    } else {
+        $form_status['player_status'] = array(
+            '#type' => 'item',
+            '#title' => $status,
+        );
+        $form_status['player_killed_accept'] = array(
+            '#type' => 'button', 
+            '#name' => 'accept_kill',
+            '#value' => t('yes'),
+            '#button_type' => 'submit',
+            '#executes_submit_callback' => true,
+            '#submit' => array('accept_death'),
+        );
+        $form_status['player_killed_denied'] = array(
+            '#type' => 'button', 
+            '#name' => 'deny_kill',
+            '#value' => t('no'),
+            '#button_type' => 'submit',
+            '#executes_submit_callback' => true,
+            '#submit' => array('deny_death'),
+        );
+    }
+
+    variable_set('status', $status);
+
+    return $form_status;
+}
+function create_form_targeting() {
+    $form_targeting = array();
+
+    // get the users killed targets
+    $killed_targets = get_killed_targets();
+
+    // test if the user is suspended
+    $status = variable_get('status');
+    if ($status == t('suspended')) {
+        $form_targeting['current_target'] = array(
+            '#type' => 'item',
+            '#title' => t('current target: na'),
+        );
+        $form_targeting['pending_target'] = array(
+            '#type' => 'item',
+            '#title' => t('pending target: na'),
+        );
+        $form_targeting['killed_targets'] = array(
+            '#type' => 'item',
+            '#title' => t('killed: ') . $killed_targets,
+        );
+        return $form_targeting;
+    }
+
+    //otherwise get current and pending targets
+    $current_target = get_current_target();
+    $pending_target = get_pending_target();
+
+    $form_targeting['current_target'] = array(
+        '#type' => 'item',
+        '#title' => t('current target: ') . $current_target,
+    );
+
+    if ($current_target != 'none') {
+         $form_targeting['target_killed'] = array(
+            '#type' => 'button', 
+            '#name' => 'target_killed',
+            '#value' => t('target eliminated'),
+            '#button_type' => 'submit',
+            '#executes_submit_callback' => true,
+            '#submit' => array('target_killed'),
+        );
+    }
+
+    $form_targeting['pending_target'] = array(
+        '#type' => 'item',
+        '#title' => t('pending target: ') . $pending_target,
+    );
+    $form_targeting['killed_targets'] = array(
+        '#type' => 'item',
+        '#title' => t('killed: ') . $killed_targets,
+    );
+
+    return $form_targeting;
+}
+
+// form doing functions 
+function get_player_status() {
+    global $user;
+
+    // is the user suspended?
+    $query = db_select('field_data_field_suspended', 'fps')
+        ->fields('fps', array('field_suspended_value'))
+        ->condition('entity_id', $user->uid)
+        ->execute()
+        ->fetch();
+
+    if ($query->field_suspended_value == 1)  return 'suspended';
+
+    // is the user alive?
+    $query = db_select('field_data_field_alive', 'fa')
+        ->condition('entity_id', $user->uid)
+        ->condition('field_alive_value', 0)
+        ->countquery()
+        ->execute()
+        ->fetch();
+
+    // who killed the user?
+    if ($query->expression > 0) {
+        $query = db_select('field_data_field_killed_targets', 'fkt')
+            ->fields('fkt', array('entity_id'))
+            ->condition('field_killed_targets_target_id', $user->uid)
+            ->execute()
+            ->fetch();
+
+        if (!isset($query->entity_id))  return 'killed by unkown player.';
+        
+        $killer = user_load($query->entity_id);
+        return 'killed by ' . $killer->field_first_name['und'][0]['value'] . ' ' . $killer->field_last_name['und'][0]['value'];
+    }
+
+    // is the user pending death?
+    $query = db_select('field_data_field_pending_target', 'fpt')
+        ->fields('fpt', array('entity_id', 'field_pending_target_target_id'))
+        ->condition('field_pending_target_target_id', $user->uid)
+        ->execute()
+        ->fetch();
+
+    // who is saying killed the user?
+    if ($query && count($query) > 0) {
+        $killer = user_load($query->entity_id);
+        $killer_name = $killer->field_first_name['und'][0]['value'] . ' ' . $killer->field_last_name['und'][0]['value'];
+        variable_set('possible_killer', $query->entity_id);
+        return 'have you been killed by ' . $killer_name . '?';
+    }
+
+    return 'in good shape';
+}
+function get_player_game() {
+    global $user;
+
+     $query = db_select('field_data_field_players', 'fp')
+        ->fields('fp', array('entity_id'))
+        ->condition('bundle', 'game')
+        ->condition('field_players_target_id', $user->uid)
+        ->execute()
+        ->fetch();
+
+    if (!$query || count($query) < 1) return array();
+
+    return node_load($query->entity_id);
+}
+function get_organizer_msg() {
+    global $user;
+
+     $query = db_select('field_data_field_recipient_s_', 'fr')
+        ->fields('fr', array('entity_id'))
+        ->condition('bundle', 'messages')
+        ->condition('field_recipient_s__target_id', $user->uid)
+        ->execute()
+        ->fetch();
+
+    if (!$query || count($query) < 1) return '';
+
+    return node_load($query->entity_id);
+}
+
+// form submit functions
+function accept_death() {
+    global $user;
+    $full_user = user_load($user->uid);
+    $full_user->field_alive['und'][0] = array('value' => 0);
+    unset($full_user->field_current_target['und'][0]);
+    user_save($full_user);
+
+    $killer_user = user_load(variable_get('possible_killer'));
+    unset($killer_user->field_pending_target['und'][0]);
+    $killer_user->field_killed_targets['und'][] = array('target_id' => $user->uid);
+    user_save($killer_user);
+
+    variable_del('possible_killer');
+    variable_del('user_game');
+    drupal_set_message(t('you have been terminated'), 'status');
+}
+function deny_death() {
+    global $user;
+
+    //get the user's full name
+    $full_user = user_load($user->uid);
+    $victim_name = $full_user->field_first_name['und'][0]['value'] . ' ' . $full_user->field_last_name['und'][0]['value'];
+
+    //get the killer's full name
+    $killer_user = user_load(variable_get('possible_killer'));
+    $killer_name = $killer_user->field_first_name['und'][0]['value'] . ' ' . $killer_user->field_last_name['und'][0]['value'];
+
+    //remove the pending kill
+    unset($killer_user->field_pending_target['und'][0]);
+    $killer_user->field_current_target['und'][0] = array( 'value' => $user->uid);
+    user_save($killer_user);
+
+    //get the organizers
+    $game = node_load(variable_get('user_game'));
+    $organizers = $game->field_organizers['und'];
+
+    //send messages
+    send_message_to_organizers($victim_name, $killer_name, $organizers);
+    send_message_to_killer($victim_name, $killer_user->uid);
+
+    //finish up
+    variable_del('possible_killer');
+    variable_del('user_game');
+    drupal_set_message(t('you have denied death, a message has been sent to your deceitful assassin, as well as to the organizer.'), 'warning');
+}
+function target_killed() {
+    global $user;
+    $full_user = user_load($user->uid);
+
+    $target_uid = $full_user->field_current_target['und'][0]['target_id'];
+    $full_user->field_pending_target['und'][0] = array( 'target_id' => $target_uid);
+
+    unset($full_user->field_current_target['und']);
+
+    user_save($full_user);
+}
+
+// targetting functions
+function get_current_target() {
+    global $user;
+
+    $query = db_select('field_data_field_current_target', 'fct')
+        ->fields('fct', array('field_current_target_target_id'))
+        ->condition('entity_id', $user->uid)
+        ->execute()
+        ->fetchassoc();
+
+    if (!$query || !isset($query) || count($query) == 0) return 'none';
+    if (!isset($query['field_current_target_target_id'])) return 'none';
+    if ($query['field_current_target_target_id'] <= 1) return 'none';
+
+    $current_target = user_load($query['field_current_target_target_id']);
+    $ct_name = $current_target->field_first_name['und'][0]['value'] . ' ' . $current_target->field_last_name['und'][0]['value'];
+    
+    return $ct_name;
+}
+function get_pending_target() {
+    global $user;
+    
+    $query = db_select('field_data_field_pending_target', 'fpt')
+        ->fields('fpt', array('field_pending_target_target_id'))
+        ->condition('entity_id', $user->uid)
+        ->execute()
+        ->fetchassoc();
+
+    if (!$query || !isset($query) || count($query) == 0) return '-';
+    if (!isset($query['field_pending_target_target_id'])) return '-';
+    if ($query['field_pending_target_target_id'] <= 1) return '-';
+
+    $pending_target = user_load($query['field_pending_target_target_id']);
+    $pt_name = $pending_target->field_first_name['und'][0]['value'] . ' ' . $pending_target->field_last_name['und'][0]['value'];
+    
+    return $pt_name;
+}
+function get_killed_targets() {
+    global $user;
+    
+    $query = db_select('field_data_field_killed_targets', 'fkt')
+        ->fields('fkt', array('field_killed_targets_target_id'))
+        ->condition('entity_id', $user->uid)
+        ->execute();
+    
+    $killed_targets = '';
+    while($record = $query->fetchassoc()) {
+        $killed_target = user_load($record['field_killed_targets_target_id']);
+        $kt_name = $killed_target->field_first_name['und'][0]['value'] . ' ' . $killed_target->field_last_name['und'][0]['value'];
+        if (strlen($killed_targets) == 0) {
+            $killed_targets = $kt_name;
+            continue;
+        }
+        $killed_targets+= ', ' . $kt_name; 
+    }
+
+    if (strlen($killed_targets) == 0) return 'none';
+
+    return $killed_targets;
+}
+
+// deny death functions
+function send_message_to_organizers($victim_name, $killer_name, $organizers) {
+    $node = new stdclass();
+    $node->type = 'messages';
+    node_object_prepare($node);
+    $body_text = $victim_name . ' has contested the kill from ' . $killer_name . '.';
+
+    $node->title = 'kill objection from ' . $victim_name;
+    $node->field_body['und'][0]['value'] = $body_text;
+
+    $node->field_send_sms['und'][0]['value'] = 1;
+    $node->field_send_email['und'][0]['value'] = 1;
+    $node->field_recipient_s_['und'] = $organizers;
+
+    node_save($node);
+}
+function send_message_to_killer($victim_name, $killer_uid) {
+    $node = new stdclass();
+    $node->type = 'messages';
+    node_object_prepare($node);
+    $body_text = $victim_name . ' has contested your kill. the organizer has been contacted but also try to solve this problem by yourself if you can.';
+
+    $node->title = 'kill objection from ' . $victim_name;
+    $node->field_body['und'][0]['value'] = $body_text;
+
+    $node->field_send_sms['und'][0]['value'] = 1;
+    $node->field_send_email['und'][0]['value'] = 1;
+    $node->field_recipient_s_['und'][0] = array('target_id' => $killer_uid);
+
+    node_save($node);
+}

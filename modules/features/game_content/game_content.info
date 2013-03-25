@@ -1,0 +1,15 @@
+name = Game content
+core = 7.x
+package = Assassin Manager - Features
+php = 5.2.4
+dependencies[] = date
+dependencies[] = entityreference
+dependencies[] = features
+dependencies[] = options
+dependencies[] = text
+features[features_api][] = api:1
+features[field][] = node-game-field_info
+features[field][] = node-game-field_organizers
+features[field][] = node-game-field_players
+features[field][] = node-game-field_time
+features[node][] = game

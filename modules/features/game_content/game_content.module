@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Game content feature.
+ */
+
+include_once 'game_content.features.inc';

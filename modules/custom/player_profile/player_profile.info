@@ -1,0 +1,8 @@
+name = Player Profile
+description = A block to display the user profile
+package = Assassin Manager - Modules
+
+core = 7.x
+php = 5.x
+
+version = "1.0"

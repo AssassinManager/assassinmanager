@@ -1,0 +1,233 @@
+<?php
+
+/* block functions */
+
+// implements hook_block_info().
+function target_system_block_info() {
+    $blocks = array();
+    $blocks['target_system_block'] = array(
+        'info' => t('targets table & button'),
+    );
+ 
+    return $blocks;
+}
+
+// implements hook_block_configure().
+function target_system_block_configure($delta='') {
+    return array();
+}
+
+// implements hook_block_view().
+function target_system_block_view($delta='') {
+    $block = array();
+ 
+    switch($delta) {
+        case 'target_system_block':
+            $block['subject'] = null;
+            $block['content'] = create_content();
+            break;
+        }
+
+    return $block;
+}
+
+function create_content() {
+    $content['players_table'] = create_table();
+    $content['button_form'] = drupal_get_form('target_system_form');
+    return $content;
+}
+function create_table() {
+ 
+    $headers = array(
+        'alive' => t('alive'),
+        'no_target' => t('alive with no target'),
+        'eliminated' => t('eliminated'),
+        'suspended' => t('suspended'),
+    );
+
+    $users = get_users();
+    $rows = create_table_content($users);
+
+    $form['table'] = array(
+        '#theme' => 'table',
+        '#header' => $headers,
+        '#rows' => $rows,
+        '#empty' => t('no users found'),
+    );
+    return $form;
+}
+function target_system_form() {
+    $form['assign_targets'] = array(
+        '#type' => 'button', 
+        '#name' => 'assign_targets',
+        '#value' => t('assign all targets'),
+        '#button_type' => 'submit',
+        '#executes_submit_callback' => true,
+        '#submit' => array('assign_targets'),
+    );
+
+    return $form;
+}
+function target_system_form_validate(&$form, &$form_state) {
+    if($form['assign_targets']) return;
+
+    if($form_state['values']['subject_field'] == "" || strlen($form_state['values']['subject_field']) == 0) {
+        form_set_error('subject_field', t('must enter subject'));
+    }
+}
+
+
+/* form doing functions */
+
+function get_users() {
+    $node = menu_get_object();
+    $nid = $node->nid;
+
+    $query = db_select('users', 'u');
+    $query->join('field_data_field_players', 'fdp', 'u.uid = fdp.field_players_target_id');
+    $query->fields('u', array('uid'));
+    $query->condition('fdp.entity_id ',$nid,'=');
+    $result = $query->execute();
+
+    $data = array();
+    while($record = $result->fetchassoc()) {
+        array_push($data, $record['uid']);
+    }
+
+    $users = user_load_multiple($data);
+
+    return $users;
+}
+function create_table_content($users) {
+    $cols['alive'] = array();
+    $cols['no_target'] = array();
+    $cols['eliminated'] = array();
+    $cols['suspended'] = array();
+
+    foreach($users as $user){
+        global $base_url;
+
+        // get the user's name
+        $name = $user->field_first_name['und'][0]['value'] . ' ' . $user->field_last_name['und'][0]['value'];
+
+        // get the user's profile url
+        $url = $base_url . '/';
+        if(variable_get('clean_url', 0) != 1) $url = $url . '?q=';
+        $url = $url . 'user/' . $user->uid;
+        $name_url = '<a href="' . $url . '">' . $name . '</a>';
+        
+        // user is dead
+        if ($user->field_alive['und'][0]['value'] == 0) {
+            array_push($cols['eliminated'], $name_url);
+            continue;
+        }
+
+        // user is suspended
+        if ($user->field_suspended['und'][0]['value'] == 1) {
+            array_push($cols['suspended'], $name_url);
+            continue;
+        }
+
+        // user has no target
+        if (!isset($user->field_current_target['und']) || count($user->field_current_target['und']) == 0) {
+            array_push($cols['no_target'], $name_url);
+            continue;
+        }
+
+        // user is all good!
+        array_push($cols['alive'], $name_url);
+    }
+
+    $max_rows =count($cols['alive']);
+
+    if ($max_rows < count($cols['eliminated'])) $max_rows = count($cols['eliminated']);
+    if ($max_rows < count($cols['suspended']))  $max_rows = count($cols['suspended']);
+    if ($max_rows < count($cols['no_target']))  $max_rows = count($cols['no_target']);
+
+    $must_balance = true;
+    while ($must_balance) {
+        if (count($cols['eliminated']) < $max_rows) array_push($cols['eliminated'], '');
+        if (count($cols['suspended']) < $max_rows)  array_push($cols['suspended'], '');
+        if (count($cols['no_target']) < $max_rows)  array_push($cols['no_target'], '');
+        if (count($cols['alive']) < $max_rows)      array_push($cols['alive'], '');
+
+        if (count($cols['eliminated']) == $max_rows &&
+            count($cols['suspended']) == $max_rows  &&
+            count($cols['no_target']) == $max_rows &&
+            count($cols['alive']) == $max_rows) {
+            $must_balance = false;
+        }
+    }
+
+    $rows = array();
+    for($counter=0; $counter<$max_rows; $counter++) {
+        $new_row = array (  
+                            'alive' => $cols['alive'][$counter],
+                            'no_target' => $cols['no_target'][$counter],
+                            'eliminated' => $cols['eliminated'][$counter],
+                            'suspended' => $cols['suspended'][$counter],
+                        );
+        array_push($rows, $new_row);
+    }
+
+    return $rows;
+}
+function assign_targets(&$form, &$form_state) {
+    drupal_set_message(t('all targets assigned'));
+
+    $users = get_users();
+    $users_targeted = array();
+    $users_not_targeted = array();
+
+    //find all targeted users
+    foreach($users as $user) {
+        if(!isset($user->field_current_target['und']) || count($user->field_current_target['und']) == 0) continue;
+
+        if($user->field_alive['und'][0]['value'] == 0 && count($user->field_current_target['und']) == 1) {
+            unset($user->field_current_target['und'][0]);
+            continue;
+        }
+
+        array_push($users_targeted, $user->field_current_target['und'][0]['target_id']);
+    }
+
+    //find all untargeted users
+    foreach($users as $user) {
+        if(in_array($user->uid, $users_targeted)) continue;
+        if($user->field_alive['und'][0]['value'] == 0) continue;
+
+        array_push($users_not_targeted, $user->uid);
+    }
+
+    //assign targets
+    foreach($users as $user) {
+
+        //target already assigned, skip it
+        if(isset($user->field_current_target['und']) && count($user->field_current_target['und']) == 1) continue;
+
+        //player dead, skip it
+        if($user->field_alive['und'][0]['value'] == 0) continue;
+
+        //player has pending target, skip it
+        if(isset($user->field_pending_target['und'])) continue;
+
+        //if no more targets, pop the first of the targeted ones
+        if (count($users_not_targeted) == 0) array_push($users_not_targeted, array_shift($users_targeted));
+
+        $user->field_current_target['und'][0]['target_id'] = array_pop($users_not_targeted);
+
+        //if user targets himself, change that
+        if ($user->field_current_target['und'][0]['target_id'] == $user->uid) {
+            //if no more targets, pop the first of the targeted ones
+            if (count($users_not_targeted) == 0) array_push($users_not_targeted, array_shift($users_targeted));
+            $user->field_current_target['und'][0]['target_id'] = array_pop($users_not_targeted);
+
+            array_push($users_not_targeted, $user->uid);
+        }
+
+        //add targeted user to targeted list
+        array_push($users_targeted, $user->field_current_target['und'][0]['target_id']);
+
+        user_save($user);
+    }
+}

@@ -1,0 +1,93 @@
+diff --git a/plugins/selection/EntityReference_SelectionHandler_Generic.class.php b/plugins/selection/EntityReference_SelectionHandler_Generic.class.php
+index 7db4045..f3ff067 100644
+--- a/plugins/selection/EntityReference_SelectionHandler_Generic.class.php
++++ b/plugins/selection/EntityReference_SelectionHandler_Generic.class.php
+@@ -307,6 +307,27 @@ class EntityReference_SelectionHandler_Generic_node extends EntityReference_Sele
+  * This only exists to workaround core bugs.
+  */
+ class EntityReference_SelectionHandler_Generic_user extends EntityReference_SelectionHandler_Generic {
++  /**
++   * Implements EntityReferenceHandler::settingsForm().
++   */
++  public static function settingsForm($field, $instance) {
++    $settings = $field['settings']['handler_settings'];
++    $form = parent::settingsForm($field, $instance);
++    $form['referenceable_roles'] = array(
++      '#type' => 'checkboxes',
++      '#title' => t('User roles that can be referenced'),
++      '#default_value' => isset($settings['referenceable_roles']) ? array_filter($settings['referenceable_roles']) : array(),
++      '#options' => user_roles(TRUE),
++    );
++    $form['referenceable_status'] = array(
++      '#type' => 'checkboxes',
++      '#title' => t('User status that can be referenced'),
++      '#default_value' => isset($settings['referenceable_status']) ? array_filter($settings['referenceable_status']) : array('active' => 'active'),
++      '#options' => array('active' => t('Active'), 'blocked' => t('Blocked')),
++    );
++    return $form;
++  }
++
+   public function buildEntityFieldQuery($match = NULL, $match_operator = 'CONTAINS') {
+     $query = parent::buildEntityFieldQuery($match, $match_operator);
+ 
+@@ -315,21 +336,33 @@ class EntityReference_SelectionHandler_Generic_user extends EntityReference_Sele
+       $query->propertyCondition('name', $match, $match_operator);
+     }
+ 
+-    // Adding the 'user_access' tag is sadly insufficient for users: core
+-    // requires us to also know about the concept of 'blocked' and
+-    // 'active'.
+-    if (!user_access('administer users')) {
+-      $query->propertyCondition('status', 1);
++    $field = $this->field;
++    $settings = $field['settings']['handler_settings'];
++    $referenceable_roles = isset($settings['referenceable_roles']) ? array_filter($settings['referenceable_roles']) : array();
++    $referenceable_status = isset($settings['referenceable_status']) ? array_filter($settings['referenceable_status']) : array('active' => 'active');
++
++    // If this filter is not filled, use the users access permissions.
++    if (empty($referenceable_status)) {
++      // Adding the 'user_access' tag is sadly insufficient for users: core
++      // requires us to also know about the concept of 'blocked' and 'active'.
++      if (!user_access('administer users')) {
++        $query->propertyCondition('status', 1);
++      }
++    }
++    elseif (count($referenceable_status) == 1) {
++      $values = array('active' => 1, 'blocked' => 0);
++      $query->propertyCondition('status', $values[key($referenceable_status)]);
+     }
++
+     return $query;
+   }
+ 
+   public function entityFieldQueryAlter(SelectQueryInterface $query) {
++    $conditions = &$query->conditions();
+     if (user_access('administer users')) {
+-      // In addition, if the user is administrator, we need to make sure to
++      // If the user is administrator, we need to make sure to
+       // match the anonymous user, that doesn't actually have a name in the
+       // database.
+-      $conditions = &$query->conditions();
+       foreach ($conditions as $key => $condition) {
+         if ($condition['field'] == 'users.name') {
+           // Remove the condition.
+@@ -356,6 +389,19 @@ class EntityReference_SelectionHandler_Generic_user extends EntityReference_Sele
+         }
+       }
+     }
++
++    $field = $this->field;
++    $settings = $field['settings']['handler_settings'];
++    $referenceable_roles = isset($settings['referenceable_roles']) ? array_filter($settings['referenceable_roles']) : array();
++    if (!$referenceable_roles || !empty($referenceable_roles[DRUPAL_AUTHENTICATED_RID])) {
++      // Return early if "authenticated user" choosen.
++      return;
++    }
++
++    if (!isset($referenceable_roles[DRUPAL_AUTHENTICATED_RID])) {
++      $query->join('users_roles', 'users_roles', 'users.uid = users_roles.uid');
++      $query->condition('users_roles.rid', array_keys($referenceable_roles), 'IN');
++    }
+   }
+ }
+ 
