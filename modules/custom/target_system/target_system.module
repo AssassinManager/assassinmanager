@@ -104,8 +104,9 @@ function create_table_content($users) {
     $cols['eliminated'] = array();
     $cols['suspended'] = array();
 
+    global $base_url;
+
     foreach($users as $user){
-        global $base_url;
 
         // get the user's name
         $name = $user->field_first_name['und'][0]['value'] . ' ' . $user->field_last_name['und'][0]['value'];
