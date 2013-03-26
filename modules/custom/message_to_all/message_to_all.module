@@ -12,7 +12,7 @@ function message_players_form() {
     /* -- message form -- */
     $form['message_checkbox'] = array(
         '#type' => 'checkbox',
-        '#title' => t('message all players'),
+        '#title' => t('Message all players'),
     );
 
     $form['message'] = array(

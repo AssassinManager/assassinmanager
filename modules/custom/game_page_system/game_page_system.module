@@ -70,7 +70,7 @@ function game_players_form() {
     $form['assign_targets'] = array(
         '#type' => 'button', 
         '#name' => 'assign_targets',
-        '#value' => t('assign all targets'),
+        '#value' => t('Assign all targets'),
         '#button_type' => 'submit',
         '#executes_submit_callback' => true,
         '#submit' => array('assign_targets'),

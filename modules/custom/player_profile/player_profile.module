@@ -359,9 +359,9 @@ function get_current_target() {
         ->execute()
         ->fetchassoc();
 
-    if (!$query || !isset($query) || count($query) == 0) return 'none';
-    if (!isset($query['field_current_target_target_id'])) return 'none';
-    if ($query['field_current_target_target_id'] <= 1) return 'none';
+    if (!$query || !isset($query) || count($query) == 0) return '-';
+    if (!isset($query['field_current_target_target_id'])) return '-';
+    if ($query['field_current_target_target_id'] <= 1) return '-';
 
     $curr_target = user_load($query['field_current_target_target_id']);
     $ct_name = $curr_target->field_first_name['und'][0]['value'] . ' ' . $curr_target->field_last_name['und'][0]['value'];
@@ -404,7 +404,7 @@ function get_killed_targets() {
         $killed_targets[] = $kt_name;
     }
 
-    if (count($killed_targets) == 0) return array('none');
+    if (count($killed_targets) == 0) return array('-');
 
     return $killed_targets;
 }

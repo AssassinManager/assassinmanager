@@ -11,7 +11,7 @@ function check_license($license) {
             ->fields('n', array('nid'));
 
     $query->join('field_data_field_code', 'fc', 'fc.entity_id = n.nid and field_code_value = :license', array(':license' => $license));
-    $result = $query->countQuery()->execute()->fetch();
+    $result = $query->countquery()->execute()->fetch();
     
     if($result->expression > 0) return true;
 
@@ -19,10 +19,13 @@ function check_license($license) {
 }
 
 function reg_check_validation_callback(&$form_state) {
+
+    if (!isset($form_state['field_license_code']['und'][0]['value']['#value'])) return;
+    if (strlen($form_state['field_license_code']['und'][0]['value']['#value']) == 0) return;
+
     $license_code = $form_state['field_license_code']['und'][0]['value']['#value'];
-    if(!check_license($license_code)) {
-        form_set_error('field-name-field-license-code', t('invalid license code'));
-    }
+    if(!check_license($license_code))
+        form_set_error('field-name-field-license-code', t('Invalid license code'));
 }
 
 function registration_license_check_user_insert(&$edit, $account, $category) {
