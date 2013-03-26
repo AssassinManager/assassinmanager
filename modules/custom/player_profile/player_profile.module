@@ -33,6 +33,7 @@ function player_profile_form() {
     $form['game'] = create_form_game();
     $form['status'] = create_form_status();
     $form['target'] = create_form_targeting();
+    $form['buttons'] = create_buttons_row();
 
     return $form;
 }
@@ -140,9 +141,9 @@ function create_form_targeting() {
 
     // create table
     $headers = array(
-        'current' => t('Current target'),
-        'pending' => t('Pending kill confirmation'),
-        'killed' => t('Killed target(s)'),
+        'current' => t('current target'),
+        'pending' => t('pending kill confirmation'),
+        'killed' => t('killed target(s)'),
     );
 
     $rows = create_table_content_targetting($current_target, $pending_target, $killed_targets);
@@ -153,20 +154,25 @@ function create_form_targeting() {
         '#rows' => $rows,
         '#empty' => t('no users found'),
     );
-    /*
-     if (count($current_target) > 0) {
-         $killed_button['target_killed'] = array(
+    return $form_targets;
+}
+function create_buttons_row() {
+    $button_row = array();
+    $status = variable_get('status');
+    if ($status != t('suspended')) {
+        $current_target = array(get_current_target());
+
+         if (count($current_target) == 0) return $button_row;
+         $button_row['target_killed'] = array(
             '#type' => 'button', 
             '#name' => 'target_killed',
-            '#value' => t('target eliminated'),
+            '#value' => t('Target eliminated'),
             '#button_type' => 'submit',
             '#executes_submit_callback' => true,
             '#submit' => array('target_killed'),
         );
-        array_push($current_target, $killed_button);
     }
-    */
-    return $form_targets;
+    return $button_row;
 }
 function create_table_content_targetting($current_target, $pending_target, $killed_targets) {
     $cols['current'] = $current_target;

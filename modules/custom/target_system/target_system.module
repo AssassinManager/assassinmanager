@@ -174,7 +174,6 @@ function create_table_content($users) {
     return $rows;
 }
 function assign_targets(&$form, &$form_state) {
-    drupal_set_message(t('all targets assigned'));
 
     $users = get_users();
     $users_targeted = array();
@@ -198,6 +197,13 @@ function assign_targets(&$form, &$form_state) {
         if($user->field_alive['und'][0]['value'] == 0) continue;
 
         array_push($users_not_targeted, $user->uid);
+    }
+
+    if (count($users_not_targeted) <= 1) {
+        $full_user = user_load($users_not_targeted[0]);
+        $name = $full_user->field_first_name['und'][0]['value'] . ' ' . $full_user->field_last_name['und'][0]['value'];
+        drupal_set_message(t('Only 1 player (' . $name . ') left alive!'), 'warning');
+        return;
     }
 
     //assign targets
@@ -231,4 +237,5 @@ function assign_targets(&$form, &$form_state) {
 
         user_save($user);
     }
+    drupal_set_message(t('all targets assigned'));
 }
