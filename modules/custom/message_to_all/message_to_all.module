@@ -1,55 +1,32 @@
 <?php
 
-/* Block functions */
-
-// implements hook_block_info().
-function message_to_all_block_info() {
-    $blocks = array();
-    $blocks['message_to_all_block'] = array(
-        'info' => t('Message to all users'),
-    );
- 
-    return $blocks;
-}
-
-// implements hook_block_configure().
-function message_to_all_block_configure($delta='') {
-    return array();
-}
-
-// implements hook_block_view().
-function message_to_all_block_view($delta='') {
-  $block = array();
- 
-  switch($delta) {
-    case 'message_to_all_block' :
-        $block['subject'] = t('Message all users');
-        $block['content'] = drupal_get_form('message_to_all_form');
-        break;
+function message_to_all_form_validate(&$form, &$form_state) {
+    if($form_state['values']['subject_field'] == "" || strlen($form_state['values']['subject_field']) == 0) {
+        form_set_error('subject_field', t('must enter subject'));
     }
- 
-    return $block;
+    if($form_state['values']['message_field'] == "" || strlen($form_state['values']['message_field']) == 0) {
+        form_set_error('message_field', t('must enter message'));
+    }
 }
-
-function message_to_all_form() {
-    /* -- Message Form -- */
+function message_players_form() {
+    /* -- message form -- */
     $form['message_checkbox'] = array(
         '#type' => 'checkbox',
-        '#title' => t('Show message box'),
+        '#title' => t('message all players'),
     );
 
     $form['message'] = array(
         '#type' => 'container',
         '#states' => array(
             'visible' => array(
-                ':input[name="message_checkbox"]' => array('checked' => TRUE),
+                ':input[name="message_checkbox"]' => array('checked' => true),
                 ),
             ),
     );
 
     $form['message']['subject_field'] = array(
         '#type' => 'textfield',
-        '#title' => t('Subject:'),
+        '#title' => t('subject:'),
         '#default_value' => '',
         '#size' => 30,
         '#maxlength' => 60,
@@ -57,7 +34,7 @@ function message_to_all_form() {
 
     $form['message']['message_field'] = array(
         '#type' => 'textarea',
-        '#title' => t('Message'),
+        '#title' => t('message'),
         '#wysiwyg' => false,
         '#rows' => 3,
     );
@@ -65,26 +42,16 @@ function message_to_all_form() {
     $form['message']['message_send'] = array(
         '#type' => 'button', 
         '#name' => 'download',
-        '#value' => t('Send message'),
+        '#value' => t('send message'),
         '#button_type' => 'submit',
-        '#executes_submit_callback' => TRUE,
+        '#executes_submit_callback' => true,
         '#submit' => array('send_message'),
     );
 
     return $form;
 }
 
-function message_to_all_form_validate(&$form, &$form_state) {
-    if($form_state['values']['subject_field'] == "" || strlen($form_state['values']['subject_field']) == 0) {
-        form_set_error('subject_field', t('Must enter subject'));
-    }
-    if($form_state['values']['message_field'] == "" || strlen($form_state['values']['message_field']) == 0) {
-        form_set_error('message_field', t('Must enter message'));
-    }
-}
-
-
-/* Form Doing functions */
+// form content manipulation
 function get_user_ids() {
 
     $query = db_select('users', 'u')

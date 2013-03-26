@@ -1,80 +1,5 @@
 <?php
 
-/* Block functions */
-
-// implements hook_block_info().
-function code_gen_block_info() {
-    $blocks = array();
-    $blocks['code_gen_block'] = array(
-    'info' => t('license to kill control'),
-    );
- 
-    return $blocks;
-}
-
-// implements hook_block_configure().
-function code_gen_block_configure($delta='') {
-    return array();
-}
-
-// implements hook_block_view().
-function code_gen_block_view($delta='') {
-  $block = array();
- 
-  switch($delta) {
-    case 'code_gen_block' :
-        $block['subject'] = t('Licenses');
-        $block['content'] = drupal_get_form('code_gen_form');
-        break;
-    }
- 
-    return $block;
-}
-
-function code_gen_form() {
-    $form['licenses_title'] = array(
-        '#type' => 'item', 
-        '#title' => t('%licenses_num  license(s) still unused', array( '%licenses_num' => count_licenses() )),
-    );
-
-    // unused licenses
-    $form['licenses_download'] = array(
-        '#type' => 'button', 
-        '#name' => 'download',
-        '#value' => t('Download'),
-        '#button_type' => 'submit',
-        '#executes_submit_callback' => TRUE,
-        '#submit' => array('export_licenses_as_csv'),
-    );
-
-    $form['licenses_clean'] = array(
-        '#type' => 'button',
-        '#name' => 'clean',
-        '#value' => t('Clean up'),
-        '#button_type' => 'submit',
-        '#executes_submit_callback' => TRUE,
-        '#submit' => array('clean_licenses'),
-    );
-
-    // code generation
-    $form['generate_licenses'] = array(
-        '#type' => 'textfield', 
-        '#title' => t('generate licenses:'),
-        '#default_value' => 0,
-        '#size' => 3, 
-        '#maxlength' => 3, 
-    );
-
-    $form['generate_download'] = array(
-        '#type' => 'submit', 
-        '#name' => 'generate',
-        '#value' => t('Generate and download'),
-        '#submit' => array('generate_licenses'),
-    );
-
-    return $form;
-}
-
 function code_gen_form_validate(&$form, &$form_state) {
     if(!is_numeric($form_state['values']['generate_licenses'])) {
         form_set_error('generate_licenses', t('must enter number'));
@@ -85,8 +10,66 @@ function code_gen_form_validate(&$form, &$form_state) {
     }
 }
 
+function game_licenses_form() {
+    /* -- message form -- */
+    $form['licenses_checkbox'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Manage Licenses'),
+    );
 
-/* Form Doing functions */
+    $form['licenses'] = array(
+        '#type' => 'container',
+        '#states' => array(
+            'visible' => array(
+                ':input[name="licenses_checkbox"]' => array('checked' => true),
+                ),
+            ),
+    );
+
+   $form['licenses']['licenses_title'] = array(
+        '#type' => 'item', 
+        '#title' => t('%licenses_num  license(s) still unused', array( '%licenses_num' => count_licenses() )),
+    );
+
+    // unused licenses
+    $form['licenses']['licenses_download'] = array(
+        '#type' => 'button', 
+        '#name' => 'download',
+        '#value' => t('Download'),
+        '#button_type' => 'submit',
+        '#executes_submit_callback' => TRUE,
+        '#submit' => array('export_licenses_as_csv'),
+    );
+
+    $form['licenses']['licenses_clean'] = array(
+        '#type' => 'button',
+        '#name' => 'clean',
+        '#value' => t('Clean up'),
+        '#button_type' => 'submit',
+        '#executes_submit_callback' => TRUE,
+        '#submit' => array('clean_licenses'),
+    );
+
+    // code generation
+    $form['licenses']['generate_licenses'] = array(
+        '#type' => 'textfield', 
+        '#title' => t('generate licenses:'),
+        '#default_value' => 0,
+        '#size' => 3, 
+        '#maxlength' => 3, 
+    );
+
+    $form['licenses']['generate_download'] = array(
+        '#type' => 'submit', 
+        '#name' => 'generate',
+        '#value' => t('Generate and download'),
+        '#submit' => array('generate_licenses'),
+    );
+
+    return $form;
+}
+
+// form content manipulation
 
 function count_licenses() {
     $query = db_select('node', 'n')
@@ -98,7 +81,6 @@ function count_licenses() {
 
     return strval($data->expression);
 }
-
 function clean_licenses() {
     $query = db_select('node', 'n')
         ->fields('n', array('nid'))
@@ -113,7 +95,6 @@ function clean_licenses() {
 
     node_delete_multiple($nids);
 }
-
 function generate_licenses(&$form, &$form_state) {
     $license_num = intval($form_state['values']['generate_licenses']);
 
@@ -123,7 +104,6 @@ function generate_licenses(&$form, &$form_state) {
 
     export_licenses_as_csv();
 }
-
 function export_licenses_as_csv() {
     global $base_url;
     $page = $base_url . '/';
@@ -140,7 +120,7 @@ function export_licenses_as_csv() {
 }
 
 
-/* Code Generation Doing functions */
+// code Generation Doing functions
 
 function create_license($number) {
     $node = new stdClass();
@@ -152,7 +132,6 @@ function create_license($number) {
 
     node_save($node);
 }
-
 function code_gen_node_presave($node) {   
     
     if ($node->type != 'license_to_kill') return;

@@ -31,9 +31,19 @@ function target_system_block_view($delta='') {
     return $block;
 }
 
+// form creation
 function create_content() {
-    $content['players_table'] = create_table();
-    $content['button_form'] = drupal_get_form('target_system_form');
+    $content['players_table']       = create_table();
+    $content['button_form']         = drupal_get_form('target_system_form');
+    if(module_exists('code_gen')) {
+        module_load_include('module', 'code_gen');
+        $content['licenses_form']   = drupal_get_form('game_licenses_form');
+    }
+    if(module_exists('message_to_all')) {
+        module_load_include('module', 'message_to_all');
+        $content['message_form']    = drupal_get_form('message_players_form');
+    }
+
     return $content;
 }
 function create_table() {
@@ -68,6 +78,7 @@ function target_system_form() {
 
     return $form;
 }
+
 function target_system_form_validate(&$form, &$form_state) {
     if($form['assign_targets']) return;
 
@@ -77,7 +88,7 @@ function target_system_form_validate(&$form, &$form_state) {
 }
 
 
-/* form doing functions */
+// form content manipulation
 
 function get_users() {
     $node = menu_get_object();
