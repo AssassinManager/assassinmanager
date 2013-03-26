@@ -3,26 +3,26 @@
 /* block functions */
 
 // implements hook_block_info().
-function target_system_block_info() {
+function game_page_system_block_info() {
     $blocks = array();
-    $blocks['target_system_block'] = array(
-        'info' => t('targets table & button'),
+    $blocks['game_page_system_block'] = array(
+        'info' => t('Game page system'),
     );
  
     return $blocks;
 }
 
 // implements hook_block_configure().
-function target_system_block_configure($delta='') {
+function game_page_system_block_configure($delta='') {
     return array();
 }
 
 // implements hook_block_view().
-function target_system_block_view($delta='') {
+function game_page_system_block_view($delta='') {
     $block = array();
  
     switch($delta) {
-        case 'target_system_block':
+        case 'game_page_system_block':
             $block['subject'] = null;
             $block['content'] = create_content();
             break;
@@ -34,7 +34,7 @@ function target_system_block_view($delta='') {
 // form creation
 function create_content() {
     $content['players_table']       = create_table();
-    $content['button_form']         = drupal_get_form('target_system_form');
+    $content['button_form']         = drupal_get_form('game_players_form');
     if(module_exists('code_gen')) {
         module_load_include('module', 'code_gen');
         $content['licenses_form']   = drupal_get_form('game_licenses_form');
@@ -66,7 +66,7 @@ function create_table() {
     );
     return $form;
 }
-function target_system_form() {
+function game_players_form() {
     $form['assign_targets'] = array(
         '#type' => 'button', 
         '#name' => 'assign_targets',
@@ -79,7 +79,7 @@ function target_system_form() {
     return $form;
 }
 
-function target_system_form_validate(&$form, &$form_state) {
+function game_players_form_form_validate(&$form, &$form_state) {
     if($form['assign_targets']) return;
 
     if($form_state['values']['subject_field'] == "" || strlen($form_state['values']['subject_field']) == 0) {

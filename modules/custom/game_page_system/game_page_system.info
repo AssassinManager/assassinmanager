@@ -1,4 +1,4 @@
-name = Target System
+name = Game Page System
 description = System to assign targets to all users, and create a block with button
 package = Assassin Manager - Modules
 
