@@ -42,7 +42,7 @@ function player_profile_form() {
 function create_form_game() {
     global $user;
 
-    $game = get_player_game($user);
+    $game = get_game();
     $form_game = array();
 
     date_default_timezone_set($game->field_time['und'][0]['timezone_db']);
@@ -227,32 +227,17 @@ function get_player_status() {
 
     return 'in good shape';
 }
-function get_player_game($user) {
+function get_game() {
 
-    //check if user is organizer
-    if (in_array('Organizer', $user->roles)) {
-        $query = db_select('field_data_field_organizers', 'fo')
-            ->fields('fo', array('entity_id'))
-            ->condition('bundle', 'game')
-            ->condition('field_organizers_target_id', $user->uid)
-            ->execute()
-            ->fetch();
-
-        if (!$query || count($query) < 1) return array();
-
-        return node_load($query->entity_id);
-    }
-
-     $query = db_select('field_data_field_players', 'fp')
-        ->fields('fp', array('entity_id'))
-        ->condition('bundle', 'game')
-        ->condition('field_players_target_id', $user->uid)
+     $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'game')
         ->execute()
         ->fetch();
 
     if (!$query || count($query) < 1) return array();
 
-    return node_load($query->entity_id);
+    return node_load($query->nid);
 }
 function create_table_content_targetting($current_target, $pending_target, $killed_targets) {
     $cols['current'] = $current_target;
@@ -321,7 +306,7 @@ function deny_death() {
 
     //remove the pending kill
     unset($killer_user->field_pending_target['und'][0]);
-    $killer_user->field_current_target['und'][0] = array( 'value' => $user->uid);
+    $killer_user->field_current_target['und'][0] = array('target_id' => $user->uid);
     user_save($killer_user);
 
     //get the organizers
@@ -410,14 +395,23 @@ function get_killed_targets() {
 }
 
 // deny death
+function get_tax_term_kill() {
+    $term = taxonomy_get_term_by_name('Kill Issue');
+    reset($term);
+    return key($term);
+}
 function send_message_to_organizers($victim_name, $killer_name, $organizers) {
     $node = new stdclass();
-    $node->type = 'messages';
+    $node->type = 'message';
     node_object_prepare($node);
     $body_text = $victim_name . ' has contested the kill from ' . $killer_name . '.';
 
+    $node->field_category['und'][0]['tid'] = get_tax_term_kill();
+    $node->language = 'und';
+
     $node->title = 'kill objection from ' . $victim_name;
-    $node->field_body['und'][0]['value'] = $body_text;
+    $node->field_message['und'][0]['value'] = $body_text;
+    $node->field_message['und'][0]['format'] = 'filtered_html';
 
     $node->field_send_sms['und'][0]['value'] = 1;
     $node->field_send_email['und'][0]['value'] = 1;
@@ -427,12 +421,16 @@ function send_message_to_organizers($victim_name, $killer_name, $organizers) {
 }
 function send_message_to_killer($victim_name, $killer_uid) {
     $node = new stdclass();
-    $node->type = 'messages';
+    $node->type = 'message';
     node_object_prepare($node);
     $body_text = $victim_name . ' has contested your kill. the organizer has been contacted but also try to solve this problem by yourself if you can.';
 
+    $node->field_category['und'][0]['tid'] = get_tax_term_kill();
+    $node->language = 'und';
+
     $node->title = 'kill objection from ' . $victim_name;
-    $node->field_body['und'][0]['value'] = $body_text;
+    $node->field_message['und'][0]['value'] = $body_text;
+    $node->field_message['und'][0]['format'] = 'filtered_html';
 
     $node->field_send_sms['und'][0]['value'] = 1;
     $node->field_send_email['und'][0]['value'] = 1;

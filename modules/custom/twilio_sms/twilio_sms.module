@@ -2,13 +2,13 @@
  
 
  /**
- * Implements hook_menu().
+ * implements hook_menu().
  */
  function twilio_sms_menu() {
   $items = array();
   $items['admin/config/workflow/rules/sms_action'] = array(
-    'title' => 'Twilio Configuration',
-    'description' => 'Set Twilio API settings',
+    'title' => 'twilio configuration',
+    'description' => 'set twilio api settings',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('twilio_sms_settings'),
     'access arguments' => array('administer site configuration'),
@@ -69,30 +69,29 @@ function twilio_sms_settings() {
 function twilio_sms_rules_action_info() {
     return array(
         'twilio_sms_action_send_sms' => array(
-            'label' => t('Sends a twilio SMS'),
-            'group' => t('Twilio SMS'),
+            'label' => t('sends a twilio sms'),
+            'group' => t('twilio sms'),
             'parameter' => array(
                 'user' => array(
                     'type' => 'user',
-                    'label' => t('Recipient'),
+                    'label' => t('recipient'),
                 ),
                 'message' => array(
                     'type' => 'text',
-                    'label' => t('Message'),
+                    'label' => t('message'),
                 ),
             ),
         ),
     );
 }
  
-
 function twilio_sms_action_send_sms($user, $message) {
-    if (count($user->field_cell_phone) < 1) {
+    if (count($user->field_cell_phone['und']) < 1) {
         drupal_set_message(t('the recipient has no cell phone!'), 'error');
         return;
     }
 
-    $file = drupal_root . '/sites/all/libraries/twilio/twilio.php';
+    $file = getcwd() . '/sites/all/libraries/twilio/Twilio.php';
     if (!is_file($file)) {
         drupal_set_message(t('sms error, please contact the assassin manager staff for help.'), 'error');
         return;
