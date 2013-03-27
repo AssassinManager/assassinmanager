@@ -32,6 +32,12 @@ function message_players_form() {
         '#maxlength' => 60,
     );
 
+    $form['message']['email_checkbox'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('email them too'),
+        '#default_value' => FALSE,
+    );
+
     $form['message']['message_field'] = array(
         '#type' => 'textarea',
         '#title' => t('message'),
@@ -69,14 +75,16 @@ function get_user_ids() {
 }
 
 function send_message(&$form, &$form_state) {
-    $node = new stdClass();
-    $node->type = 'messages';
+    $node = new stdclass();
+    $node->type = 'message';
     node_object_prepare($node);
 
     $node->title = $form_state['values']['subject_field'];
-    $node->field_body = $form_state['values']['message_field'];
+    $node->field_message['und'][0]['value'] = $form_state['values']['message_field'];
+    $node->field_message['und'][0]['format '] = 'filtered_html';
 
     $node->field_recipient_s_['und'] = get_user_ids();
+    $node->field_send_email['und'][0]['value'] = $form_state['values']['email_checkbox'];
 
     node_save($node);
 }
