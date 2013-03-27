@@ -1,5 +1,21 @@
 <?php
 
+// implements hook_menu().
+function player_profile_menu() {
+    $items = array();
+    $items['player_profile/profile'] = array( 
+        'title' => 'Profile',  // Required
+        'page callback' => 'player_profile_profile',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+    );
+    return $items;
+}
+function player_profile_profile() { 
+    // the player profile
+ }
+
+
 // implements hook_block_info().
 function player_profile_block_info() {
     $blocks = array();
@@ -158,19 +174,52 @@ function create_form_targeting() {
 }
 function create_buttons_row() {
     $button_row = array();
-    $status = variable_get('status');
-    if ($status != t('suspended')) {
-        $current_target = array(get_current_target());
+    global $user;
 
-         if (count($current_target) == 0) return $button_row;
-         $button_row['target_killed'] = array(
-            '#type' => 'button', 
-            '#name' => 'target_killed',
-            '#value' => t('target eliminated'),
-            '#button_type' => 'submit',
-            '#executes_submit_callback' => true,
-            '#submit' => array('target_killed'),
-        );
+    if (in_array('Organizer', $user->roles)) {
+        if (TRUE) { // Check if user is already suspended
+            $button_row['player_suspend'] = array(
+                '#type' => 'button',
+                '#disabled' => FALSE,
+                '#name' => 'player_suspend',
+                '#value' => t('Suspend'),
+                '#button_type' => 'submit',
+                '#executes_submit_callback' => true,
+                '#submit' => array('suspend_player'),
+            );
+        } else {
+            $button_row['player_suspend'] = array(
+                '#type' => 'button',
+                '#disabled' => TRUE,
+                '#name' => 'player_suspend',
+                '#value' => t('Suspend'),
+                '#button_type' => 'submit',
+                '#executes_submit_callback' => true,
+                '#submit' => array('suspend_player'),
+            );
+        }
+    } else {
+         if (get_current_target() == '-' || variable_get('status') != t('suspended')) {
+            $button_row['target_killed'] = array(
+                '#type' => 'button',
+                '#disabled' => TRUE,
+                '#name' => 'target_killed',
+                '#value' => t('Target eliminated'),
+                '#button_type' => 'submit',
+                '#executes_submit_callback' => true,
+                '#submit' => array('target_killed'),
+            );
+        } else {
+            $button_row['target_killed'] = array(
+                '#type' => 'button',
+                '#disabled' => FALSE,
+                '#name' => 'target_killed',
+                '#value' => t('Target eliminated'),
+                '#button_type' => 'submit',
+                '#executes_submit_callback' => true,
+                '#submit' => array('target_killed'),
+            );
+        }
     }
     return $button_row;
 }
@@ -332,6 +381,9 @@ function target_killed() {
     unset($full_user->field_current_target['und']);
 
     user_save($full_user);
+}
+function suspend_player() {
+    drupal_set_message('Must first create multi-user capabilities');
 }
 
 // targetting
