@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Player feature.
+ */
+
+include_once 'player.features.inc';
