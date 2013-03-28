@@ -86,7 +86,7 @@ function twilio_sms_rules_action_info() {
 }
  
 function twilio_sms_action_send_sms($user, $message) {
-    if (count($user->field_cell_phone['und']) < 1) {
+    if (!isset($user->field_cell_phone['und'])) {
         drupal_set_message(t('the recipient has no cell phone!'), 'error');
         return;
     }

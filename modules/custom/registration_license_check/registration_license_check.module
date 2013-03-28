@@ -25,9 +25,9 @@ function reg_check_validation_callback(&$form_state) {
 
     $license_code = $form_state['field_license_code']['und'][0]['value']['#value'];
     if(!check_license($license_code))
-        form_set_error('field-name-field-license-code', t('Invalid license code'));
+        form_set_error('field-name-field-license-code', t('invalid license code'));
 
-    if(!get_current_game()) form_set_error(NULL, t('The game you are trying to register to has not yet been created...'));
+    if(!get_current_game()) form_set_error(null, t('the game you are trying to register to has not yet been created...'));
 }
 
 function registration_license_check_user_insert(&$edit, $account, $category) {

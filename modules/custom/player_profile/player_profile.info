@@ -1,5 +1,5 @@
 name = Player Profile
-description = A block to display the user profile
+description = Automatically create and update the player profile
 package = Assassin Manager - Modules
 
 core = 7.x
