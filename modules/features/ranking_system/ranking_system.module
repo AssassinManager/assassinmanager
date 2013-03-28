@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Ranking System feature.
- */
-
-include_once 'ranking_system.features.inc';
