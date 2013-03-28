@@ -9,11 +9,11 @@ function player_ranking_cron() {
     $usersKills = array();
     while($record = $result->fetchAssoc()) {
         $usersKills[$record['uid']] = $record['kills'];
-   }
+    }
 
-   if(!arsort($usersKills)) return;
+    if(!arsort($usersKills)) return;
 
-   $counter = 0;
+    $counter = 0;
     foreach ($usersKills as $key => $value) {
         $counter++;
         $user = user_load($key);
@@ -21,6 +21,4 @@ function player_ranking_cron() {
         user_save($user);
         unset($user);
     }
-
-    watchdog('Rank users_and_kills', '<pre>' . print_r($usersKills, 1) . '</pre>');
 }

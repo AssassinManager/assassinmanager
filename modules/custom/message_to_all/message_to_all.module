@@ -1,13 +1,5 @@
 <?php
 
-function message_to_all_form_validate(&$form, &$form_state) {
-    if($form_state['values']['subject_field'] == "" || strlen($form_state['values']['subject_field']) == 0) {
-        form_set_error('subject_field', t('must enter subject'));
-    }
-    if($form_state['values']['message_field'] == "" || strlen($form_state['values']['message_field']) == 0) {
-        form_set_error('message_field', t('must enter message'));
-    }
-}
 function message_players_form() {
     /* -- message form -- */
     $form['message_checkbox'] = array(
@@ -55,6 +47,15 @@ function message_players_form() {
     );
 
     return $form;
+}
+
+function message_to_all_form_validate(&$form, &$form_state) {
+    if($form_state['values']['subject_field'] == "" || strlen($form_state['values']['subject_field']) == 0) {
+        form_set_error('subject_field', t('must enter subject'));
+    }
+    if($form_state['values']['message_field'] == "" || strlen($form_state['values']['message_field']) == 0) {
+        form_set_error('message_field', t('must enter message'));
+    }
 }
 
 // form content manipulation

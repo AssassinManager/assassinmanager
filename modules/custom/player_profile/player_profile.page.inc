@@ -6,6 +6,17 @@ define("no_target", 2);
 define("suspended", 3);
 define("good", 4);
 
+// build the forms to add to profile
+function player_profile_form() {
+    $form = array();
+
+    //$form['status'] = create_form_status();
+    $form['target'] = create_targetting_table();
+    $form['buttons'] = create_buttons_row();
+
+    return $form;
+}
+
 // create targetting table and populate it
 function create_targetting_table() {
     $current_target = array();

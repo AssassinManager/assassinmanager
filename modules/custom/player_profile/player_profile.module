@@ -1,27 +1,8 @@
 <?php
 
-//require_once('player_profile.edit.inc');
+require_once('player_profile.edit.inc');
 require_once('player_profile.page.inc');
-
-// implements hook_user_insert()
-function player_profile_user_insert(&$edit, $account, $category) {
-    $node = new stdclass();
-    $node->type = 'profile';
-    node_object_prepare($node);
-
-    $node->uid = $account->uid;
-    $node->language = 'und';
-
-    $node->title = $account->field_first_name['und'][0]['value'] . ' ' . $account->field_last_name['und'][0]['value'];
-
-    $node->field_status['und'][0]['value'] = 'in good shape';
-    $node->field_status['und'][0]['format'] = 'filtered_html';
-
-    $game = get_game();
-    $node->field_time['und'][0] = $game->field_time['und'][0];
-
-    node_save($node);
-}
+require_once('player_profile.create.inc');
 
 /**
  * user profile page displaying a table with:
@@ -40,17 +21,6 @@ function player_profile_page_build(&$page) {
 
     $page['content']['profile_form'] = drupal_get_form('player_profile_form');
   }
-}
-
-// build the forms to add to profile
-function player_profile_form() {
-    $form = array();
-
-    //$form['status'] = create_form_status();
-    $form['target'] = create_targetting_table();
-    $form['buttons'] = create_buttons_row();
-
-    return $form;
 }
 
 // player data

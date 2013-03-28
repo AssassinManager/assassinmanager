@@ -1,34 +1,12 @@
 <?php
 
-/* block functions */
+// implements hook_page_build()
+function game_page_system_page_build(&$page) {
+  if ($node = menu_get_object('node', 1)) {
+    if ($node->type != 'game') return;
 
-// implements hook_block_info().
-function game_page_system_block_info() {
-    $blocks = array();
-    $blocks['game_page_system_block'] = array(
-        'info' => t('Game page system'),
-    );
- 
-    return $blocks;
-}
-
-// implements hook_block_configure().
-function game_page_system_block_configure($delta='') {
-    return array();
-}
-
-// implements hook_block_view().
-function game_page_system_block_view($delta='') {
-    $block = array();
- 
-    switch($delta) {
-        case 'game_page_system_block':
-            $block['subject'] = null;
-            $block['content'] = create_content();
-            break;
-        }
-
-    return $block;
+    $page['content']['game_system'] = create_content();
+  }
 }
 
 // form creation
@@ -86,7 +64,6 @@ function game_players_form_form_validate(&$form, &$form_state) {
         form_set_error('subject_field', t('must enter subject'));
     }
 }
-
 
 // form content manipulation
 function get_users() {
