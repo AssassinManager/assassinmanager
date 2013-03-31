@@ -80,15 +80,12 @@ function messaging_system_views_default_views() {
   $handler->display->display_options['fields']['uid']['table'] = 'node';
   $handler->display->display_options['fields']['uid']['field'] = 'uid';
   $handler->display->display_options['fields']['uid']['label'] = '';
-  $handler->display->display_options['fields']['uid']['exclude'] = TRUE;
   $handler->display->display_options['fields']['uid']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['uid']['link_to_user'] = FALSE;
-  /* Field: Content: Body */
-  $handler->display->display_options['fields']['body']['id'] = 'body';
-  $handler->display->display_options['fields']['body']['table'] = 'field_data_body';
-  $handler->display->display_options['fields']['body']['field'] = 'body';
-  $handler->display->display_options['fields']['body']['label'] = 'Message';
-  $handler->display->display_options['fields']['body']['element_label_colon'] = FALSE;
+  /* Field: Content: Message */
+  $handler->display->display_options['fields']['field_message']['id'] = 'field_message';
+  $handler->display->display_options['fields']['field_message']['table'] = 'field_data_field_message';
+  $handler->display->display_options['fields']['field_message']['field'] = 'field_message';
   /* Field: Global: Custom text */
   $handler->display->display_options['fields']['nothing_1']['id'] = 'nothing_1';
   $handler->display->display_options['fields']['nothing_1']['table'] = 'views';
@@ -108,12 +105,6 @@ function messaging_system_views_default_views() {
   $handler->display->display_options['fields']['comment_body']['relationship'] = 'cid';
   $handler->display->display_options['fields']['comment_body']['label'] = '';
   $handler->display->display_options['fields']['comment_body']['element_label_colon'] = FALSE;
-  /* Field: Field: Read */
-  $handler->display->display_options['fields']['field_read']['id'] = 'field_read';
-  $handler->display->display_options['fields']['field_read']['table'] = 'field_data_field_read';
-  $handler->display->display_options['fields']['field_read']['field'] = 'field_read';
-  $handler->display->display_options['fields']['field_read']['label'] = '';
-  $handler->display->display_options['fields']['field_read']['element_label_colon'] = FALSE;
   /* Sort criterion: Content: Updated/commented date */
   $handler->display->display_options['sorts']['last_updated']['id'] = 'last_updated';
   $handler->display->display_options['sorts']['last_updated']['table'] = 'node_comment_statistics';
@@ -141,6 +132,7 @@ function messaging_system_views_default_views() {
     4 => '4',
     6 => '6',
     7 => '7',
+    8 => '8',
   );
   $handler->display->display_options['filters']['field_category_tid']['exposed'] = TRUE;
   $handler->display->display_options['filters']['field_category_tid']['expose']['operator_id'] = 'field_category_tid_op';
