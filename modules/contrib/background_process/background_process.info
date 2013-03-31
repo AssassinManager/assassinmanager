@@ -1,0 +1,14 @@
+name = Background Process
+description = Provides framework for running code in the background
+core = 7.x
+php = 5.0
+
+dependencies[] = progress
+configure = admin/config/system/background-process
+
+; Information added by drupal.org packaging script on 2013-01-06
+version = "7.x-1.14"
+core = "7.x"
+project = "background_process"
+datestamp = "1357473962"
+

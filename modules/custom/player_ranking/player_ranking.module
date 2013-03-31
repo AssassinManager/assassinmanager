@@ -2,7 +2,8 @@
 
 function player_ranking_cron() {
     $query = db_select('users', 'u')
-            ->fields('u', array('uid'));
+            ->fields('u', array('uid'))
+            ->condition('uid', array(0, 1), 'NOT IN');
     $query->addExpression('(SELECT COUNT(*) FROM field_data_field_killed_targets AS fk WHERE fk.entity_id = uid)', 'kills');
     $result = $query->execute();
 
@@ -11,6 +12,7 @@ function player_ranking_cron() {
         $usersKills[$record['uid']] = $record['kills'];
     }
 
+    if(count($usersKills) == 0) return;
     if(!arsort($usersKills)) return;
 
     $counter = 0;

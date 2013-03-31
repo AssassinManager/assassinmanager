@@ -26,7 +26,7 @@ function reg_check_validation_callback(&$form_state) {
     if(!check_license($license_code))
         form_set_error('field-name-field-license-code', t('invalid license code'));
 
-    if(!get_current_game()) form_set_error(null, t('The game you are trying to register to has not yet been created...'));
+    if(!get_current_game()) form_set_error(null, t('the game you are trying to register to has not yet been created...'));
 }
 
 function registration_license_check_user_insert(&$edit, $account, $category) {
@@ -45,15 +45,19 @@ function registration_license_check_user_insert(&$edit, $account, $category) {
 
 function get_current_game() {
      $query = db_select('node', 'n')
-            ->fields('n', array('nid'))
-            ->condition('type', 'game', '=')
-            ->execute()->fetchAssoc();
+        ->fields('n', array('nid'))
+        ->condition('type', 'game', '=')
+        ->execute()
+        ->fetch();
 
-    if (!isset($query['nid'])) return FALSE;
-    return $query['nid'];
+    if (!isset($query->nid)) return nil;
+
+    return $query->nid;
 }
 function add_user_to_game($user_id) {
     $game = node_load(get_current_game());
+
+    if (!isset($game->field_players['und'])) $game->field_players['und'] = array();
     array_push($game->field_players['und'], array('target_id' => $user_id));
 
     node_save($game);

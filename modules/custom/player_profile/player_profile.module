@@ -81,7 +81,7 @@ function get_game() {
         ->execute()
         ->fetch();
 
-    if (!isset($query->nid)) return array();
+    if (!isset($query->nid)) return nil;
 
     return $query->nid;
 }

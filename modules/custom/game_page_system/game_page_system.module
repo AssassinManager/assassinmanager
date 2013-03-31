@@ -40,7 +40,7 @@ function create_table() {
         '#theme' => 'table',
         '#header' => $headers,
         '#rows' => $rows,
-        '#empty' => t('no users found'),
+        '#empty' => t('No players yet'),
     );
     return $form;
 }
