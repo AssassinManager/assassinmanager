@@ -71,6 +71,32 @@ function messaging_system_field_default_field_bases() {
     'type' => 'text_long',
   );
 
+  // Exported field_base: 'field_post_to_news'
+  $field_bases['field_post_to_news'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_post_to_news',
+    'foreign keys' => array(),
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => 'Don\'t post to news',
+        1 => 'Post to news',
+      ),
+      'allowed_values_function' => '',
+    ),
+    'translatable' => 0,
+    'type' => 'list_boolean',
+  );
+
   // Exported field_base: 'field_read_by'
   $field_bases['field_read_by'] = array(
     'active' => 1,

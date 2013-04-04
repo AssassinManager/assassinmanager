@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * player.features.inc
+ * players_and_organizers.features.inc
  */
 
 /**
  * Implements hook_node_info().
  */
-function player_node_info() {
+function players_and_organizers_node_info() {
   $items = array(
     'profile' => array(
       'name' => t('Profile'),
