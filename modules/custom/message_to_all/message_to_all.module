@@ -30,6 +30,12 @@ function message_players_form() {
         '#default_value' => FALSE,
     );
 
+    $form['message']['news_checkbox'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Post on news feed'),
+        '#default_value' => FALSE,
+    );
+
     $form['message']['message_field'] = array(
         '#type' => 'textarea',
         '#title' => t('message'),
@@ -86,6 +92,7 @@ function send_message(&$form, &$form_state) {
 
     $node->field_recipient_s_['und'] = get_user_ids();
     $node->field_send_email['und'][0]['value'] = $form_state['values']['email_checkbox'];
+    $node->field_post_to_news['und'][0]['value'] = $form_state['values']['news_checkbox'];
 
     node_save($node);
 }

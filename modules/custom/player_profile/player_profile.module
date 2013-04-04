@@ -18,6 +18,7 @@ require_once('player_profile.create.inc');
 function player_profile_page_build(&$page) {
   if ($node = menu_get_object('node', 1)) {
     if ($node->type != 'profile') return;
+    if (isset($page['content']['system_main']['#node_edit_form'])) return;
 
     $page['content']['profile_form'] = drupal_get_form('player_profile_form');
   }
@@ -71,6 +72,33 @@ function who_killed_player() {
         ->fetch();
 
     return $query->entity_id;
+}
+function get_player_profile($uid) {
+    $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'profile')
+        ->condition('uid', $uid)
+        ->execute()
+        ->fetch();
+
+    if (!isset($query->nid)) return NULL;
+    return $query->nid;
+}
+function get_player_profiles() {
+    $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'profile')
+        ->execute();
+
+    $profiles = array();
+    while($record = $query->fetchassoc()) {
+        $profile = node_load($record['nid']);
+        array_push($profiles, $profile);
+    }
+
+    if (count($profiles) == 0) return NULL;
+
+    return $profiles;
 }
 
 // game data
@@ -144,11 +172,13 @@ function get_killed_targets() {
 
 // form submit
 function accept_death() {
+    // make changed to the current, now dead, user
     $full_user = user_load(get_player_id());
     $full_user->field_alive['und'][0] = array('value' => 0);
     unset($full_user->field_current_target['und'][0]);
     user_save($full_user);
 
+    // make changes to the killer user
     $killer_user = user_load(who_killed_player());
     unset($killer_user->field_pending_target['und'][0]);
     $killer_user->field_killed_targets['und'][] = array('target_id' => get_player_id());
@@ -157,41 +187,65 @@ function accept_death() {
     drupal_set_message(t('you have been terminated'), 'status');
 }
 function deny_death() {
-    //get the user's full name
+    // get the user's full name
     $full_user = user_load(get_player_id());
     $victim_name = $full_user->field_first_name['und'][0]['value'] . ' ' . $full_user->field_last_name['und'][0]['value'];
 
-    //get the killer's full name
+    // get the killer's full name
     $killer_user = user_load(who_killed_player());
     $killer_name = $killer_user->field_first_name['und'][0]['value'] . ' ' . $killer_user->field_last_name['und'][0]['value'];
 
-    //remove the pending kill
+    // remove the pending kill
     unset($killer_user->field_pending_target['und'][0]);
     $killer_user->field_current_target['und'][0] = array('target_id' => get_player_id());
     user_save($killer_user);
 
-    //get the organizers
+    // update the victim's profile
+    if (!($nid = get_player_profile(get_player_id()))) return;
+
+    $victim_profile = node_load($nid);
+    $victim_profile->field_status['und'][0]['value'] = 'in good shape';
+    $victim_profile->field_status['und'][0]['format'] = 'filtered_html';
+    node_save($victim_profile);
+
+    // get the organizers
     $game = node_load(get_game());
     $organizers = $game->field_organizers['und'];
 
-    //send messages
+    // send messages
     send_message_to_organizers($victim_name, $killer_name, $organizers);
     send_message_to_killer($victim_name, $killer_user->uid);
 
     drupal_set_message(t('you have denied death, a message has been sent to your deceitful assassin, as well as to the organizer.'), 'warning');
 }
 function target_killed() {
+    // make changes to the current user (the killer)
     $full_user = user_load(get_player_id());
 
     $target_uid = $full_user->field_current_target['und'][0]['target_id'];
-    $full_user->field_pending_target['und'][0] = array( 'target_id' => $target_uid);
-
+    $full_user->field_pending_target['und'][0] = array('target_id' => $target_uid);
     unset($full_user->field_current_target['und']);
-
     user_save($full_user);
+
+    // get the user name before changing user
+    $killer_name = $full_user->field_first_name['und'][0]['value'] . ' ' . $full_user->field_last_name['und'][0]['value'];
+
+    // make changes to the victim's profile
+    if (!($nid = get_player_profile($target_uid))) return;
+
+    $revived_profile = node_load($nid);
+    $revived_profile->field_status['und'][0]['value'] = 'have you been killed by ' . $killer_name . '?';
+    $revived_profile->field_status['und'][0]['format'] = 'filtered_html';
+    node_save($revived_profile);
 }
 function suspend_player() {
-    drupal_set_message('must first create multi-user capabilities');
+    $the_user = user_load(get_player_id());
+
+    $the_user->field_status['und'][0]['value'] = 1;
+    unset($the_user->field_current_target['und']);
+    user_save($the_user);
+
+    drupal_set_message('Player suspended');
 }
 
 // get taxonomy terms tid from name

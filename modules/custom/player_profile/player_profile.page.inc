@@ -92,23 +92,69 @@ function create_buttons_row() {
         if ($status == suspended) // check if user is already suspended
              $button_row['player_suspend'] = get_suspend_player_button(true);
         else $button_row['player_suspend'] = get_suspend_player_button(false);
+        $button_row['player_message'] = get_message_player_button();
 
     } else {
-    	if ($status == suspended) {
-    		$button_row['target_killed'] = get_killed_target_button(true);
+        if ($status == suspended) {
+            $button_row['target_killed'] = get_killed_target_button(true);
 
-    	} else if ($status == dead) {
-    		$button_row['target_killed'] = get_killed_target_button(true);
+        } else if ($status == dead) {
+            $button_row['target_killed'] = get_killed_target_button(true);
 
-    	} else if ($status == pending_death) {
-    		$button_row['target_killed'] = get_killed_target_button(true);
-    		$button_row['accept_death'] = get_player_death_button(true);
-    		$button_row['deny_death'] = get_player_death_button(false);
-    	} else {
-    		$button_row['target_killed'] = get_killed_target_button(false);
-    	}
+        } else if ($status == pending_death) {
+            $button_row['target_killed'] = get_killed_target_button(true);
+            $button_row['accept_death'] = get_player_death_button(true);
+            $button_row['deny_death'] = get_player_death_button(false);
+        } else {
+            $button_row['target_killed'] = get_killed_target_button(false);
+        }
     }
     return $button_row;
+}
+function get_message_player_button() {
+    $message_button['message_checkbox'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('message'),
+    );
+
+    $message_button['message'] = array(
+        '#type' => 'container',
+        '#states' => array(
+            'visible' => array(
+                ':input[name="message_checkbox"]' => array('checked' => true),
+                ),
+            ),
+    );
+
+    $message_button['message']['message_field'] = array(
+        '#type' => 'textarea',
+        '#title' => t('message'),
+        '#wysiwyg' => false,
+        '#rows' => 3,
+    );
+
+    $message_button['message']['email_checkbox'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('send email'),
+        '#default_value' => false,
+    );
+
+    $message_button['message']['sms_checkbox'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('send sms'),
+        '#default_value' => false,
+    );
+
+    $message_button['message']['message_send'] = array(
+        '#type' => 'button', 
+        '#name' => 'send_message',
+        '#value' => t('send message'),
+        '#button_type' => 'submit',
+        '#executes_submit_callback' => true,
+        '#submit' => array('send_message_to_player'),
+    );
+
+    return $message_button;
 }
 function get_suspend_player_button($disabled) {
 	return array(
@@ -151,4 +197,20 @@ function get_player_death_button($accept) {
         '#executes_submit_callback' => true,
         '#submit' => array('deny_death'),
     );
+}
+
+function send_message_to_player(&$form, &$form_state) {
+    $node = new stdclass();
+    $node->type = 'message';
+    node_object_prepare($node);
+
+    $node->title = 'Message from organizer';
+    $node->field_message['und'][0]['value'] = $form_state['values']['message_field'];
+    $node->field_message['und'][0]['format '] = 'filtered_html';
+
+    $node->field_recipient_s_['und'] = get_user_ids();
+    $node->field_send_email['und'][0]['value'] = $form_state['values']['email_checkbox'];
+    $node->field_send_sms['und'][0]['value'] = $form_state['values']['sms_checkbox'];
+
+    node_save($node);
 }
