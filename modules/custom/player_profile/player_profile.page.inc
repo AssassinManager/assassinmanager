@@ -88,7 +88,7 @@ function create_buttons_row() {
     global $user;
     $status = player_status();
 
-    if (in_array('organizer', $user->roles)) {
+    if (in_array('Organizer', $user->roles)) {
         if ($status == suspended) // check if user is already suspended
              $button_row['player_suspend'] = get_suspend_player_button(true);
         else $button_row['player_suspend'] = get_suspend_player_button(false);
