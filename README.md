@@ -12,5 +12,5 @@ Online manager for your real life assassins/zombies/war game.
 Dev Server
 ==========
 
-http://assassinmanager.com/
-Midphase server, basic, for prototyping
+http://assassinmanager.com/  
+Basic Midphase server for prototyping
