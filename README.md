@@ -8,3 +8,9 @@ Online manager for your real life assassins/zombies/war game.
 - Prizes creation
 - Live User tracking
 - Email & Text Messaging system
+
+Dev Server
+==========
+
+http://assassinmanager.com/
+Midphase server, basic, for prototyping
