@@ -8,9 +8,9 @@ dependencies[] = feeds
 dependencies[] = feeds_ui
 dependencies[] = entityreference
 
-; Information added by drupal.org packaging script on 2013-04-04
-version = "7.x-1.0+5-dev"
+; Information added by drupal.org packaging script on 2013-06-06
+version = "7.x-1.0+7-dev"
 core = "7.x"
 project = "entityreference"
-datestamp = "1365080707"
+datestamp = "1370561659"
 
