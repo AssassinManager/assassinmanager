@@ -70,11 +70,11 @@ function messaging_system_default_rules_configuration() {
       ],
       "DO" : [
         { "mail" : {
-            "to" : "[node:field_recipient_s_]",
+            "to" : "[node:field-recipient-s-]",
             "subject" : "[node:title]",
             "message" : "[node:field-body]",
             "from" : "[site:current-user]",
-            "language" : [ "" ]
+            "language" : [ "node:language" ]
           }
         }
       ]

@@ -93,6 +93,7 @@ function players_and_organizers_field_default_field_instances() {
   // Exported field_instance: 'node-profile-field_time'
   $field_instances['node-profile-field_time'] = array(
     'bundle' => 'profile',
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -138,7 +139,7 @@ function players_and_organizers_field_default_field_instances() {
         'text_parts' => array(),
         'year_range' => '-0:+1',
       ),
-      'type' => 'date_popup',
+      'type' => 'date_select',
       'weight' => 3,
     ),
   );

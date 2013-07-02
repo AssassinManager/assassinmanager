@@ -128,45 +128,24 @@ function messaging_system_views_default_views() {
   $handler->display->display_options['filters']['field_category_tid']['table'] = 'field_data_field_category';
   $handler->display->display_options['filters']['field_category_tid']['field'] = 'field_category_tid';
   $handler->display->display_options['filters']['field_category_tid']['value'] = array(
-    5 => '5',
-    4 => '4',
-    6 => '6',
-    7 => '7',
-    8 => '8',
+    3 => '3',
+    1 => '1',
+    2 => '2',
   );
   $handler->display->display_options['filters']['field_category_tid']['exposed'] = TRUE;
   $handler->display->display_options['filters']['field_category_tid']['expose']['operator_id'] = 'field_category_tid_op';
   $handler->display->display_options['filters']['field_category_tid']['expose']['operator'] = 'field_category_tid_op';
   $handler->display->display_options['filters']['field_category_tid']['expose']['identifier'] = 'field_category_tid';
+  $handler->display->display_options['filters']['field_category_tid']['expose']['required'] = TRUE;
   $handler->display->display_options['filters']['field_category_tid']['expose']['remember_roles'] = array(
     2 => '2',
     1 => 0,
     3 => 0,
-    4 => 0,
     5 => 0,
-  );
-  $handler->display->display_options['filters']['field_category_tid']['group_info']['label'] = 'Category (field_category)';
-  $handler->display->display_options['filters']['field_category_tid']['group_info']['identifier'] = 'field_category_tid';
-  $handler->display->display_options['filters']['field_category_tid']['group_info']['remember'] = FALSE;
-  $handler->display->display_options['filters']['field_category_tid']['group_info']['group_items'] = array(
-    1 => array(),
-    2 => array(),
-    3 => array(),
+    4 => 0,
   );
   $handler->display->display_options['filters']['field_category_tid']['type'] = 'select';
   $handler->display->display_options['filters']['field_category_tid']['vocabulary'] = 'message_types';
-  /* Filter criterion: Global: PHP */
-  $handler->display->display_options['filters']['php']['id'] = 'php';
-  $handler->display->display_options['filters']['php']['table'] = 'views';
-  $handler->display->display_options['filters']['php']['field'] = 'php';
-  $handler->display->display_options['filters']['php']['use_php_setup'] = 0;
-  $handler->display->display_options['filters']['php']['php_filter'] = 'global $user;
-
-$recipients = node_load($row->field_recipient_s_);
-if(in_array(array(\'target_id\' => $user->uid), $recipients->field_recipient_s_[\'und\'])) return FALSE;
-if ($row->uid == $user->uid) return FALSE;
-
-return TRUE;';
 
   /* Display: Inbox */
   $handler = $view->new_display('page', 'Inbox', 'page');

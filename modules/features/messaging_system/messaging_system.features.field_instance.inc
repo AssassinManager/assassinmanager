@@ -15,7 +15,7 @@ function messaging_system_field_default_field_instances() {
     'bundle' => 'message',
     'default_value' => array(
       0 => array(
-        'tid' => 7,
+        'tid' => 3,
       ),
     ),
     'deleted' => 0,
@@ -225,8 +225,9 @@ function messaging_system_field_default_field_instances() {
     'display' => array(
       'default' => array(
         'label' => 'above',
+        'module' => 'list',
         'settings' => array(),
-        'type' => 'hidden',
+        'type' => 'list_default',
         'weight' => 3,
       ),
       'teaser' => array(
@@ -267,8 +268,9 @@ function messaging_system_field_default_field_instances() {
     'display' => array(
       'default' => array(
         'label' => 'above',
+        'module' => 'list',
         'settings' => array(),
-        'type' => 'hidden',
+        'type' => 'list_default',
         'weight' => 4,
       ),
       'teaser' => array(

@@ -4,7 +4,7 @@
 function player_profile_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
     global $user;
 
-    if(in_array("administrator", $user->roles)) return;
+    if(in_array("Administrator", $user->roles)) return;
 
     if(!in_array("Organizer", $user->roles)){
         unset($form['field_suspended']);

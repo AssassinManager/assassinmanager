@@ -125,6 +125,7 @@ function game_content_field_default_field_instances() {
   // Exported field_instance: 'node-game-field_time'
   $field_instances['node-game-field_time'] = array(
     'bundle' => 'game',
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -170,7 +171,7 @@ function game_content_field_default_field_instances() {
         'text_parts' => array(),
         'year_range' => '-0:+1',
       ),
-      'type' => 'date_popup',
+      'type' => 'date_select',
       'weight' => 31,
     ),
   );
