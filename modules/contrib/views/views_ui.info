@@ -7,9 +7,9 @@ dependencies[] = views
 files[] = views_ui.module
 files[] = plugins/views_wizard/views_ui_base_views_wizard.class.php
 
-; Information added by drupal.org packaging script on 2013-06-08
-version = "7.x-3.7+8-dev"
+; Information added by drupal.org packaging script on 2013-07-01
+version = "7.x-3.7+9-dev"
 core = "7.x"
 project = "views"
-datestamp = "1370701723"
+datestamp = "1372720562"
 
