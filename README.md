@@ -1,4 +1,4 @@
-assassinmanager
+*assassinmanager
 ===============
 
 Online manager for your real life assassins/zombies/war game.
@@ -23,13 +23,13 @@ Utils
 
 To get a a fully working env similar to dev:
 * Setup drupal
-* Import either database dumps to the db you setup drupal to  
-** assassin_db.sql is the DB before features are turned on  
-** assassin_db_features.sql has all features on  
+* Import either database dumps to the db you setup drupal to
+** The assassin_db.sql is the DB before features are turned on
+** The assassin_db_features.sql has all features on
 * Copy the .htaccess to drupal's root dir
 * Enable Clean URLS
 
 
 Development process
 ==========
-* Use Asana for bug tracking & communication
+* Use Asana for bug tracking & communication*
