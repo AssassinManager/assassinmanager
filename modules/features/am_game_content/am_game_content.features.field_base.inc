@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * game_content.features.field_base.inc
+ * am_game_content.features.field_base.inc
  */
 
 /**
@@ -41,7 +41,9 @@ function am_game_content_field_default_field_bases() {
           ),
         ),
         'sort' => array(
-          'type' => 'none',
+          'direction' => 'ASC',
+          'field' => 'field_first_name:value',
+          'type' => 'field',
         ),
         'target_bundles' => array(),
       ),
@@ -83,7 +85,7 @@ function am_game_content_field_default_field_bases() {
         ),
         'sort' => array(
           'direction' => 'ASC',
-          'field' => 'field_last_name:value',
+          'field' => 'field_first_name:value',
           'type' => 'field',
         ),
         'target_bundles' => array(),

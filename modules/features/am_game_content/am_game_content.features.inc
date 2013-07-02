@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * game_content.features.inc
+ * am_game_content.features.inc
  */
 
 /**

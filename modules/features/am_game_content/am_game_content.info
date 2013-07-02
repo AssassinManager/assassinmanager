@@ -3,16 +3,14 @@ description = Game content type, game page system, and relevant roles (Player/Or
 core = 7.x
 package = Assassin Manager - Features
 php = 5.2.4
-version = 7.x-1.0-beta3
-
-project = game_content
-
+version = 7.x-1.0-beta4
+project = am_game_content
+dependencies[] = am_players_and_organizers
 dependencies[] = date
 dependencies[] = entityreference
 dependencies[] = features
 dependencies[] = game_page_system
 dependencies[] = options
-dependencies[] = am_players_and_organizers
 dependencies[] = strongarm
 dependencies[] = text
 features[ctools][] = strongarm:strongarm:1

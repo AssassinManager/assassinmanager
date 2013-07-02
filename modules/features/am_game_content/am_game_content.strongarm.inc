@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * game_content.strongarm.inc
+ * am_game_content.strongarm.inc
  */
 
 /**
