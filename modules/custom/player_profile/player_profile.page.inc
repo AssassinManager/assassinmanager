@@ -106,7 +106,7 @@ function create_buttons_row() {
             $button_row['accept_death'] = get_player_death_button(true);
             $button_row['deny_death'] = get_player_death_button(false);
         } else {
-            $button_row['target_killed'] = get_killed_target_button(false);
+            $button_row['target_killed'] = get_killed_target_button(get_current_target() == '-');
         }
     }
     return $button_row;

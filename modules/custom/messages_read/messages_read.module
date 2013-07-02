@@ -7,8 +7,8 @@
     return array(
         'messages_read_rules_condition_reply_viewed' => array(
             'group' => 'player messages',
-            'label' => t('message is viewed by recipient(s)'),
-            'description' => t('check to see if the current user is in the recipients of the original message node'),
+            'label' => t('Message is viewed by recipient(s)'),
+            'description' => t('Check to see if the current user is in the recipients of the original message node'),
             'arguments' => array(
                 'comment' => array(
                     'type' => 'comment', 
@@ -60,8 +60,8 @@ function messages_read_rules_condition_reply_viewed($comment, $settings) {
 function messages_read_rules_action_info() {
     return array(
         'messages_read_action_viewed' => array(
-            'group' => t('player messages'),
-            'label' => t('player viewed the message reply'),
+            'group' => t('Player messages'),
+            'label' => t('Player viewed the message reply'),
             'parameter' => array(
                 'comment' => array(
                     'type' => 'comment', 
@@ -76,5 +76,6 @@ function messages_read_action_viewed($comment) {
 
     if (!isset($comment->field_read_by['und'])) $comment->field_read_by['und'] = array();
     $comment->field_read_by['und'][]['target_id'] = $user->uid;
+	
     comment_save($comment);
 }

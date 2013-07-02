@@ -185,7 +185,7 @@ function assign_targets(&$form, &$form_state) {
     if (count($users_targeted) == 0 && count($users_not_targeted) <= 1) {
         $full_user = user_load($users_not_targeted[0]);
         $name = $full_user->field_first_name['und'][0]['value'] . ' ' . $full_user->field_last_name['und'][0]['value'];
-        drupal_set_message(t('only 1 player (' . $name . ') left alive!'), 'warning');
+        drupal_set_message(t('Only 1 player (' . $name . ') left alive!'), 'warning');
         return;
     }
 

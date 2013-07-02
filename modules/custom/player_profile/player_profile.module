@@ -27,6 +27,7 @@ function player_profile_page_build(&$page) {
 // player data
 function get_player_id() {
     $split_up_url = explode('user-',$_SERVER['REQUEST_URI']);
+	
     if(count($split_up_url) == 1) return 0;
     return $split_up_url[1];
 }
@@ -40,7 +41,9 @@ function player_status() {
         ->execute()
         ->fetch();
 
-    if ($query->field_suspended_value == 1) return suspended;
+	if (is_object($query)) {
+			if ($query->field_suspended_value == 1) return suspended;
+	} else 	if ($query['field_suspended_value'] == 1) return suspended;
 
     // is the player alive?
     $query = db_select('field_data_field_alive', 'fa')
@@ -50,7 +53,9 @@ function player_status() {
         ->fetch();
 
     // if he's dead, who killed him?
-    if ($query->field_alive_value == 0) return dead;
+	if (is_object($query)) {
+			if ($query->field_alive_value == 0) return dead;
+	} else 	if ($query['field_alive_value'] == 0) return dead;
 
     // is the user pending death?
     $query = db_select('field_data_field_pending_target', 'fpt')
@@ -120,11 +125,10 @@ function get_current_target() {
         ->fields('fct', array('field_current_target_target_id'))
         ->condition('entity_id', get_player_id())
         ->execute()
-        ->fetchassoc();
+        ->fetchAssoc();
 
     if (!$query || !isset($query) || count($query) == 0) return '-';
     if (!isset($query['field_current_target_target_id'])) return '-';
-    if ($query['field_current_target_target_id'] <= 1) return '-';
 
     $curr_target = user_load($query['field_current_target_target_id']);
     $ct_name = $curr_target->field_first_name['und'][0]['value'] . ' ' . $curr_target->field_last_name['und'][0]['value'];
@@ -136,11 +140,10 @@ function get_pending_target() {
         ->fields('fpt', array('field_pending_target_target_id'))
         ->condition('entity_id', get_player_id())
         ->execute()
-        ->fetchassoc();
+		->fetchAssoc();
 
     if (!$query || !isset($query) || count($query) == 0) return '-';
     if (!isset($query['field_pending_target_target_id'])) return '-';
-    if ($query['field_pending_target_target_id'] <= 1) return '-';
 
     $pending_target = user_load($query['field_pending_target_target_id']);
     $pt_name = $pending_target->field_first_name['und'][0]['value'] . ' ' . $pending_target->field_last_name['und'][0]['value'];
@@ -156,8 +159,8 @@ function get_killed_targets() {
         ->execute();
     
     $killed_targets = array();
-
-    while($record = $query->fetchassoc()) {
+	
+    while($record = $query->fetchAssoc()) {
         $killed_target = user_load($record['field_killed_targets_target_id']);
         if(!isset($killed_target->field_first_name['und'])) continue;
         $kt_name = $killed_target->field_first_name['und'][0]['value'] . ' ' . $killed_target->field_last_name['und'][0]['value'];
@@ -234,7 +237,7 @@ function target_killed() {
     if (!($nid = get_player_profile($target_uid))) return;
 
     $revived_profile = node_load($nid);
-    $revived_profile->field_status['und'][0]['value'] = 'have you been killed by ' . $killer_name . '?';
+    $revived_profile->field_status['und'][0]['value'] = 'Have you been killed by ' . $killer_name . '?';
     $revived_profile->field_status['und'][0]['format'] = 'filtered_html';
     node_save($revived_profile);
 }
@@ -250,7 +253,7 @@ function suspend_player() {
 
 // get taxonomy terms tid from name
 function get_tax_term_kill() {
-    $term = taxonomy_get_term_by_name('kill issue');
+    $term = taxonomy_get_term_by_name('Kill issue');
     reset($term);
     return key($term);
 }
