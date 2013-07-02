@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * messaging_system.rules_defaults.inc
+ * am_messaging_system.rules_defaults.inc
  */
 
 /**
@@ -50,31 +50,6 @@ function am_messaging_system_default_rules_configuration() {
             "list" : [ "node:field-read-by" ],
             "item" : [ "site:current-user" ],
             "unique" : 1
-          }
-        }
-      ]
-    }
-  }');
-  $items['rules_user_message_send_email'] = entity_import('rules_config', '{ "rules_user_message_send_email" : {
-      "LABEL" : "User message send email",
-      "PLUGIN" : "reaction rule",
-      "TAGS" : [ "user message" ],
-      "REQUIRES" : [ "rules" ],
-      "ON" : [ "node_insert" ],
-      "IF" : [
-        { "AND" : [
-            { "node_is_of_type" : { "node" : [ "node" ], "type" : { "value" : { "message" : "message" } } } },
-            { "data_is" : { "data" : [ "node:field-send-email" ], "value" : 1 } }
-          ]
-        }
-      ],
-      "DO" : [
-        { "mail" : {
-            "to" : "[node:field-recipient-s-]",
-            "subject" : "[node:title]",
-            "message" : "[node:field-body]",
-            "from" : "[site:current-user]",
-            "language" : [ "node:language" ]
           }
         }
       ]

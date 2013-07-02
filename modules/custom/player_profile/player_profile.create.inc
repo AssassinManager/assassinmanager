@@ -15,7 +15,9 @@ function player_profile_user_insert(&$edit, $account, $category) {
     $node->field_status['und'][0]['format'] = 'filtered_html';
 
     $game = node_load(get_game());
-    $node->field_time['und'][0] = $game->field_time['und'][0];
+	if (isset($game->field_time)) {
+		$node->field_time['und'][0] = $game->field_time['und'][0];
+	}
 
     node_save($node);
 }

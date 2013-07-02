@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * messaging_system.views_default.inc
+ * am_messaging_system.views_default.inc
  */
 
 /**

@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * players_and_organizers.features.inc
+ * am_players_and_organizers.features.inc
  */
 
 /**

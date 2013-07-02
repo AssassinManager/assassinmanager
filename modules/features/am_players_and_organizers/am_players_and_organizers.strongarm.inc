@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * players_and_organizers.strongarm.inc
+ * am_players_and_organizers.strongarm.inc
  */
 
 /**
@@ -62,6 +62,20 @@ function am_players_and_organizers_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'date_default_timezone';
+  $strongarm->value = 'America/Chicago';
+  $export['date_default_timezone'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'date_first_day';
+  $strongarm->value = '0';
+  $export['date_first_day'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'node_options_profile';
   $strongarm->value = array(
     0 => 'status',
@@ -82,6 +96,20 @@ function am_players_and_organizers_strongarm() {
   $strongarm->name = 'node_submitted_profile';
   $strongarm->value = 1;
   $export['node_submitted_profile'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'site_default_country';
+  $strongarm->value = 'US';
+  $export['site_default_country'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'user_default_timezone';
+  $strongarm->value = '0';
+  $export['user_default_timezone'] = $strongarm;
 
   return $export;
 }

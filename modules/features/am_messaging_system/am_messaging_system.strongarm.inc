@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * messaging_system.strongarm.inc
+ * am_messaging_system.strongarm.inc
  */
 
 /**
@@ -108,6 +108,27 @@ function am_messaging_system_strongarm() {
   $strongarm->name = 'node_submitted_message';
   $strongarm->value = 1;
   $export['node_submitted_message'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'twilio_auth_token';
+  $strongarm->value = '7d71bcb8e36444fae06cdc335a16d74a';
+  $export['twilio_auth_token'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'twilio_number';
+  $strongarm->value = '708-669-0762';
+  $export['twilio_number'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'twilio_sid';
+  $strongarm->value = 'AC5a2be84ac3f138f11d48e040c7de698a';
+  $export['twilio_sid'] = $strongarm;
 
   return $export;
 }

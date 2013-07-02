@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * messaging_system.features.field_instance.inc
+ * am_messaging_system.features.field_instance.inc
  */
 
 /**

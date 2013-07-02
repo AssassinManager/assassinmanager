@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * messaging_system.features.uuid_term.inc
+ * am_messaging_system.features.uuid_term.inc
  */
 
 /**
