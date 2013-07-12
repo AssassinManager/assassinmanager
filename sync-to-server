@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+
+rsync -avr -e "ssh -l user" --exclude '.*' --exclude README.md --exclude modules/README.txt modules assassin@assassinmanager.com:/home/assassin/public_html/sites/all/
