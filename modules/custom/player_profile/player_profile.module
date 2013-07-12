@@ -4,6 +4,8 @@ require_once('player_profile.edit.inc');
 require_once('player_profile.page.inc');
 require_once('player_profile.create.inc');
 
+define('SUSPENDED_VALUE',	1);
+
 /**
  * user profile page displaying a table with:
  * - current target
@@ -27,7 +29,6 @@ function player_profile_page_build(&$page) {
 // player data
 function get_player_id() {
     $split_up_url = explode('user-',$_SERVER['REQUEST_URI']);
-	
     if(count($split_up_url) == 1) return 0;
     return $split_up_url[1];
 }
@@ -244,9 +245,11 @@ function target_killed() {
 function suspend_player() {
     $the_user = user_load(get_player_id());
 
-    $the_user->field_status['und'][0]['value'] = 1;
+    $the_user->field_suspended['und'][0]['value'] = SUSPENDED_VALUE;
     unset($the_user->field_current_target['und']);
     user_save($the_user);
+	
+	send_suspension_message();
 
     drupal_set_message('Player suspended');
 }
@@ -297,8 +300,8 @@ function send_message_to_killer($victim_name, $killer_uid) {
 }
 function send_suspension_message() {
     $title = 'You have been suspended!';
-    $message = 'Please contac the organizer if you have any questions';
-    $recipient = array('target_id' => get_player_id());
+    $message = 'Please contact the organizer if you have any questions';
+    $recipient = array(array('target_id' => get_player_id()));
 
     send_message_with_info(get_tax_term_suspension(), $title, $message, 1, 1, $recipient);
 }
