@@ -91,49 +91,6 @@ function am_messaging_system_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-message-field_post_to_news'
-  $field_instances['node-message-field_post_to_news'] = array(
-    'bundle' => 'message',
-    'default_value' => array(
-      0 => array(
-        'value' => 0,
-      ),
-    ),
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'list',
-        'settings' => array(),
-        'type' => 'list_default',
-        'weight' => 6,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_post_to_news',
-    'label' => 'Post to news',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'options',
-      'settings' => array(
-        'display_label' => 1,
-      ),
-      'type' => 'options_onoff',
-      'weight' => 4,
-    ),
-  );
-
   // Exported field_instance: 'node-message-field_read_by'
   $field_instances['node-message-field_read_by'] = array(
     'bundle' => 'message',
@@ -302,7 +259,6 @@ function am_messaging_system_field_default_field_instances() {
   // Included for use with string extractors like potx.
   t('Category');
   t('Message');
-  t('Post to news');
   t('Read by');
   t('Recipient(s)');
   t('Send email');
