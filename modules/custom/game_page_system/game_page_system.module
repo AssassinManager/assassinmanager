@@ -97,7 +97,7 @@ function create_table_content($users) {
         // get the user's profile url
         $url = $base_url . '/';
         if(variable_get('clean_url', 0) != 1) $url = $url . '?q=';
-        $url = $url . 'user/' . $user->uid;
+        $url = $url . 'user-' . $user->uid;
         $name_url = '<a href="' . $url . '">' . $name . '</a>';
         
         // user is dead
