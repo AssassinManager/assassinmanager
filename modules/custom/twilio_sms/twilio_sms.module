@@ -103,11 +103,11 @@ function twilio_sms_action_send_sms($user, $message) {
     $recipient_phone = $user->field_cell_phone['und'][0]['value'];
 
     $client = new services_twilio($sid, $token);
-    $message = $client->account->sms_messages->create(
+    $sms = $client->account->sms_messages->create(
         variable_get('twilio_number'),
         $recipient_phone,
         $message
     );
 
-    print $message->sid;
+    print $sms->sid;
 }

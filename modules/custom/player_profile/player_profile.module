@@ -299,8 +299,8 @@ function send_message_to_killer($victim_name, $killer_uid) {
     send_message_with_info(get_tax_term_kill(), $title, $message, 1, 1, array($recipient));
 }
 function send_suspension_message() {
-    $title = 'You have been suspended!';
-    $message = 'Please contact the organizer if you have any questions';
+    $title = 'User ' . get_player_id() . ' - Suspendion message';
+    $message = 'You have been suspended from AssassinManager.';
     $recipient = array(array('target_id' => get_player_id()));
 
     send_message_with_info(get_tax_term_suspension(), $title, $message, 1, 1, $recipient);
