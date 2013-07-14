@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * prizes_system.views_default.inc
+ * am_prizes_system.views_default.inc
  */
 
 /**
