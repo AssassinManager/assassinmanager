@@ -27,10 +27,10 @@ function create_content() {
 function create_table() {
  
     $headers = array(
-        'alive' => t('alive'),
-        'no_target' => t('alive with no target'),
-        'eliminated' => t('eliminated'),
-        'suspended' => t('suspended'),
+        'alive' => t('Alive'),
+        'no_target' => t('No target'),
+        'eliminated' => t('Eliminated'),
+        'suspended' => t('Suspended'),
     );
 
     $users = get_users();
