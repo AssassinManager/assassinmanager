@@ -38,14 +38,35 @@ function mandrill_email_rules_action_info() {
 		);
 }
 
+function _get_email_addresses($to) {
+	
+	$usernames = explode(", ", $to);
+	
+    $query = db_select('users', 'u')
+            ->fields('u', array('mail'))
+            ->condition('name',$usernames,'IN')
+            ->execute();
+
+    $emails = array();
+    while($record = $query->fetchassoc()) {
+        array_push($emails, $record['mail']);
+    }
+	
+	return implode(", ", $emails);
+}
 function mandrill_email_action_mandrill_mail($to, $subject, $message, $from = NULL) {
 
-  if (!isset($from)) $from = variable_get('site_mail', ini_get('sendmail_from'));
-  
-  custom_mandrill_email_mail($from, $to, $subject, $message);
+	if (!isset($to)) return FALSE;
+	$to = _get_email_addresses($to);
+	
+	$from = !empty($from) ? str_replace(array("\r", "\n"), '', $from) : NULL;
+	if (!isset($from)) $from = variable_get('site_mail', ini_get('sendmail_from'));
+	
+	custom_mandrill_email_mail($from, $to, $subject, $message);
 }
 
 function custom_mandrill_email_mail($from, $to, $subject, $message) {
+	
   $my_module = 'mandrill_email';
   $my_mail_token = microtime();
   $message = array(
