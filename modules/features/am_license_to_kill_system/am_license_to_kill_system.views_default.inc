@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * license_to_kill_system.views_default.inc
+ * am_license_to_kill_system.views_default.inc
  */
 
 /**

@@ -17,7 +17,6 @@ function am_messaging_system_uuid_features_default_terms() {
     'weight' => 0,
     'uuid' => '173840d0-e19c-4036-a6cd-0dfaa9616401',
     'vocabulary_machine_name' => 'message_types',
-    'url_alias' => array(),
   );
   $terms[] = array(
     'name' => 'kill issue',
@@ -26,7 +25,6 @@ function am_messaging_system_uuid_features_default_terms() {
     'weight' => 0,
     'uuid' => '23ebc2e8-84cd-4551-b3c0-391bf6125baf',
     'vocabulary_machine_name' => 'message_types',
-    'url_alias' => array(),
   );
   $terms[] = array(
     'name' => 'Information',
@@ -35,7 +33,6 @@ function am_messaging_system_uuid_features_default_terms() {
     'weight' => 0,
     'uuid' => '47d4ac7f-2587-4c88-9750-2bbe82b67df1',
     'vocabulary_machine_name' => 'message_types',
-    'url_alias' => array(),
   );
   return $terms;
 }

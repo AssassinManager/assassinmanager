@@ -27,10 +27,10 @@ function create_content() {
 function create_table() {
  
     $headers = array(
-        'alive' => t('alive'),
-        'no_target' => t('alive with no target'),
-        'eliminated' => t('eliminated'),
-        'suspended' => t('suspended'),
+        'alive' => t('Alive'),
+        'no_target' => t('No target'),
+        'eliminated' => t('Eliminated'),
+        'suspended' => t('Suspended'),
     );
 
     $users = get_users();
@@ -97,7 +97,7 @@ function create_table_content($users) {
         // get the user's profile url
         $url = $base_url . '/';
         if(variable_get('clean_url', 0) != 1) $url = $url . '?q=';
-        $url = $url . 'user/' . $user->uid;
+        $url = $url . 'user-' . $user->uid;
         $name_url = '<a href="' . $url . '">' . $name . '</a>';
         
         // user is dead
@@ -156,12 +156,23 @@ function create_table_content($users) {
 
     return $rows;
 }
+function filter_suspended_users($all_users) {
+	$filtered_users = $all_users;
+
+    foreach($all_users as $uid => $user) {
+        if($user->field_suspended['und'][0]['value'] == 1) {
+            unset($filtered_users[$uid]);
+        }
+    }
+	return $filtered_users;
+}
 function assign_targets(&$form, &$form_state) {
 
     $users = get_users();
+	$users = filter_suspended_users($users);
     $users_targeted = array();
     $users_not_targeted = array();
-
+	
     //find all targeted users
     foreach($users as $user) {
         if(!isset($user->field_current_target['und']) || count($user->field_current_target['und']) == 0) continue;

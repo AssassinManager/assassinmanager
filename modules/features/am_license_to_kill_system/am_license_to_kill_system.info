@@ -2,9 +2,8 @@ name = Licenses System
 core = 7.x
 package = Assassin Manager - Features
 php = 5.2.4
-version = 7.x-1.0-beta3
-project = license_to_kill_system
-
+version = 7.x-1.0-beta4
+project = am_license_to_kill_system
 dependencies[] = code_gen
 dependencies[] = ctools
 dependencies[] = features
