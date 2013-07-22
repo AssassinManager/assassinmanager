@@ -1,43 +1,69 @@
-<header id="navbar" role="banner" class="navbar navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
+  <!-- Header Section -->
+  <div id="header-wrapper" class="navbar navbar-static-top">
+    <div class="navbar-inner">
+      <div class="outercontainer">
+      <div class="container">
+      <div class="clear padding10"></div>
+      <div class="padding20 visible-desktop"></div>   
 
-      <?php if (!empty($logo)): ?>
-        <a class="logo pull-left" href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>">
-          <img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" />
-        </a>
-      <?php endif; ?>
+      <div class="row-fluid">
+        
+        <!-- Logo -->
+        <div class="span3">
+          <center>
 
-      <?php if (!empty($site_name)): ?>
-        <h1 id="site-name">
-          <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" class="brand"><?php print $site_name; ?></a>
-        </h1>
-      <?php endif; ?>
+            <?php if (!empty($logo)): ?>
+              <a class="logo pull-left" href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>">
+                <img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" />
+              </a>
+            <?php endif; ?>
 
-      <?php if (!empty($primary_nav) || !empty($secondary_nav) || !empty($page['navigation'])): ?>
-        <div class="nav-collapse collapse">
-          <nav role="navigation">
-            <?php if (!empty($primary_nav)): ?>
-              <?php print render($primary_nav); ?>
-            <?php endif; ?>
-            <?php if (!empty($secondary_nav)): ?>
-              <?php print render($secondary_nav); ?>
-            <?php endif; ?>
-            <?php if (!empty($page['navigation'])): ?>
-              <?php print render($page['navigation']); ?>
-            <?php endif; ?>
-          </nav>
+          </center>       
+      </div>
+        
+        <!-- Nav -->
+        <div class="span9">
+          
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </a>
+          
+          <div class="padding5 hidden-phone"></div> 
+          
+          <?php if (!empty($primary_nav) || !empty($secondary_nav) || !empty($page['navigation'])): ?>
+            <div class="nav-collapse collapse">
+              <nav role="navigation">
+                <?php if (!empty($primary_nav)): ?>
+                  <?php print render($primary_nav); ?>
+                <?php endif; ?>
+                <?php if (!empty($secondary_nav)): ?>
+                  <?php print render($secondary_nav); ?>
+                <?php endif; ?>
+                <?php if (!empty($page['navigation'])): ?>
+                  <?php print render($page['navigation']); ?>
+                <?php endif; ?>
+              </nav>
+            </div>
+          <?php endif; ?>
+
         </div>
-      <?php endif; ?>
-    </div>
-  </div>
-</header>
+
+      </div><!-- / row-fluid -->
+
+      <div class="clear padding15"></div> 
+
+      </div><!-- / container -->
+    </div><!-- / outercontainer -->
+    </div><!-- / header-wrapper -->
+  </div><!-- / navbar -->
+  <!-- End Header Section -->
+
+  <div class="clear"></div>
+
+<!-- End header -->
+
 
 <div class="main-container container">
 
@@ -89,6 +115,28 @@
 
   </div>
 </div>
-<footer class="footer container">
-  <?php print render($page['footer']); ?>
-</footer>
+  <!-- Footer section-->
+  <div class="footer-wrapper">
+    <div class="outercontainer">
+    <div class="clear padding10"></div>
+      <div class="container">
+
+        <div class="row-fluid">
+
+          <div class="span4 pull-left">
+            <ul class="social-links">
+              <li><a href="http://www.facebook.com" target="_blank"><img src="img/icon/24/social-icon-circle-fb.png" width="24" height="24" title="Facebook"></a></li>              <li><a href="http://www.twitter.com" target="_blank"><img src="img/icon/24/social-icon-circle-twit.png" width="24" height="24" title="Twitter"></a></li>              <li><a href="http://plus.google.com" target="_blank"><img src="img/icon/24/social-icon-circle-gplus.png" width="24" height="24" title="Google+"></a></li>             <li><a href="http://dribbble.com" target="_blank"><img src="img/icon/24/social-icon-circle-dribbble.png" width="24" height="24" title="Dribble"></a></li>             <li><a href="http://vimeo.com" target="_blank"><img src="img/icon/24/social-icon-circle-vimeo.png" width="24" height="24" title="Vimeo"></a></li>             <li><a href="http://scribo.smashingadvantage.com/feed/rss/" target="_blank"><img src="img/icon/24/social-icon-circle-rss.png" width="24" height="24" title="RSS"></a></li>            </ul>
+          </div>
+
+          <div class="span8">
+            <div class="pull-right">
+              <p>Copyright &copy;2013 Assassin Manager</p>            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+  <!-- End Footer section -->
