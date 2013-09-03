@@ -41,7 +41,7 @@ function theme_views_data_export_message($var) {
  */
 function theme_views_data_export_feed_icon($variables) {
   extract($variables, EXTR_SKIP);
-  $url_options = array('html' => TRUE);
+  $url_options = array('html' => true);
   if ($query) {
     $url_options['query'] = $query;
   }
@@ -58,7 +58,7 @@ function theme_views_data_export_feed_icon($variables) {
 function theme_views_data_export_complete_page($variables) {
   extract($variables, EXTR_SKIP);
   drupal_set_title(t('Data export successful'));
-  drupal_add_html_head(array('#tag' => 'meta', '#attributes' => array('http-equiv' =>"Refresh", 'content' => '3;url='. $file)), 'views_data_export_download');
+  drupal_add_html_head(array('#tag' => 'meta', '#attributes' => array('http-equiv' =>"refresh", 'content' => '3;url='. $file)), 'views_data_export_download');
   $output = '';
   $output .= '<p>';
   $output .= t('Your export has been created. View/download the file <a href="@link">here</a> (will automatically download in 3 seconds.)', array('@link' => $file));
@@ -105,24 +105,21 @@ function template_preprocess_views_data_export_csv_header(&$vars) {
 
   // Format header values.
   foreach ($vars['header'] as $key => $value) {
-    $output = decode_entities($value);
-    $output = (empty($vars['options']['keep_html'])) ? strip_tags($output) : $output;
+    $output = decode_entities(strip_tags($value));
     if (!empty($vars['options']['trim'])) {
       $output = trim($output);
     }
     if (!empty($vars['options']['encoding']) && function_exists('iconv')) {
-      switch($vars['options']['encoding']) {
-        case 'utf8_decode':
-          $converted = utf8_decode($output);
-          break;
-        default:
-          $converted = iconv("UTF-8", $vars['options']['encoding'], $output);
-          break;
+        switch($vars['options']['encoding']) {
+          case 'ASCII':
+            $converted = iconv("UTF-8", "ASCII//TRANSLIT", $output);
+            if ($converted !== FALSE) {
+              $output = $converted;
+            }
+            break;
+        }
       }
-      if ($converted !== FALSE) {
-        $output = $converted;
-      }
-    }
+      
     $vars['header'][$key] = $wrap . str_replace('"', $replace_value, $output) . $wrap;
   }
 }
@@ -151,23 +148,19 @@ function template_preprocess_views_data_export_csv_body(&$vars) {
   // Format row values.
   foreach ($vars['themed_rows'] as $i => $values) {
     foreach ($values as $j => $value) {
-      $output = decode_entities($value);
-      $output = (empty($vars['options']['keep_html'])) ? strip_tags($output) : $output;
+      $output = decode_entities(strip_tags($value));
       if (!empty($vars['options']['trim'])) {
         $output = trim($output);
       }
 
       if (!empty($vars['options']['encoding']) && function_exists('iconv')) {
         switch($vars['options']['encoding']) {
-          case 'utf8_decode':
-            $converted = utf8_decode($output);
+          case 'ASCII':
+            $converted = iconv("UTF-8", "ASCII//TRANSLIT", $output);
+            if ($converted !== FALSE) {
+              $output = $converted;
+            }
             break;
-          default:
-            $converted = iconv("UTF-8", $vars['options']['encoding'], $output);
-            break;
-        }
-        if ($converted !== FALSE) {
-          $output = $converted;
         }
       }
       if (!empty($vars['options']['replace_newlines'])) {
@@ -249,8 +242,6 @@ function template_preprocess_views_data_export_csv(&$vars) {
  */
 function template_preprocess_views_data_export_txt_body(&$vars) {
   _views_data_export_header_shared_preprocess($vars);
-  // We support not outputting fields when they are empty, so indicate so.
-  $vars['hide_empty_support'] = TRUE;
   _views_data_export_body_shared_preprocess($vars);
 }
 
@@ -355,14 +346,24 @@ function template_preprocess_views_data_export_msoffice_header(&$vars) {
  * Preprocess xml output template.
  */
 function template_preprocess_views_data_export_xml_header(&$vars) {
-  $vars['root_node'] = _views_data_export_xml_tag_clean($vars['options']['root_node']);
+  // Compute the root XML node, using the base table, and appending an 's' if needed.
+  $root_node = $vars['view']->base_table;
+  if (rtrim($root_node, 's') == $root_node) {
+    $root_node .= 's';
+  }
+  $vars['root_node'] = _views_data_export_xml_tag_clean($root_node);
 }
 
 /**
  * Preprocess xml output template.
  */
 function template_preprocess_views_data_export_xml_footer(&$vars) {
-  $vars['root_node'] = _views_data_export_xml_tag_clean($vars['options']['root_node']);
+  // Compute the root XML node, using the base table, and appending an 's' if needed.
+  $root_node = $vars['view']->base_table;
+  if (rtrim($root_node, 's') == $root_node) {
+    $root_node .= 's';
+  }
+  $vars['root_node'] = _views_data_export_xml_tag_clean($root_node);
 }
 
 /**
@@ -370,50 +371,27 @@ function template_preprocess_views_data_export_xml_footer(&$vars) {
  */
 function template_preprocess_views_data_export_xml_body(&$vars) {
   _views_data_export_header_shared_preprocess($vars);
-  // We support not outputting fields when they are empty, so indicate so.
-  $vars['hide_empty_support'] = TRUE;
   _views_data_export_body_shared_preprocess($vars);
 
-  $view = $vars['view'];
-  $style_options = $view->display_handler->get_option('style_options');
-
-  $no_encode = isset($style_options['no_entity_encode']) ? $style_options['no_entity_encode'] : array();
-
-  $cdata_wrapper = isset($style_options['cdata_wrapper']) ? $style_options['cdata_wrapper'] : array();
-
-  $vars['item_node'] = _views_data_export_xml_tag_clean($vars['options']['item_node']);
+  // Compute the tag name based on the views base table, minus any trailing 's'.
+  $vars['item_node'] = _views_data_export_xml_tag_clean(rtrim($vars['view']->base_table, 's'));
 
   foreach ($vars['themed_rows'] as $num => $row) {
     foreach ($row as $field => $content) {
-
-      // Perform xml entity encoding unless excluded by style options.
-      if (empty($no_encode[$field]) && empty($cdata_wrapper[$field])) {
-
-        // Prevent double encoding of the ampersand. Look for the entities produced by check_plain().
-        $content = preg_replace('/&(?!(amp|quot|#039|lt|gt);)/', '&amp;', $content);
-        // Convert < and > to HTML entities.
-        $content = str_replace(
-          array('<', '>'),
-          array('&lt;', '&gt;'),
-          $content);
-      }
-
-      // Perform wrapping the field data using the CDATA tag
-      // unless excluded by style options.
-      if (!empty($cdata_wrapper[$field])) {
-        // Escape CDATA end sequence only.
-        $content = '<![CDATA[' . str_replace(']]>', ']]]]><![CDATA[>', $content) . ']]>';
-      }
-
+      // Prevent double encoding of the ampersand. Look for the entities produced by check_plain().
+      $content = preg_replace('/&(?!(amp|quot|#039|lt|gt);)/', '&amp;', $content);
+      // Convert < and > to HTML entities.
+      $content = str_replace(
+        array('<', '>'),
+        array('&lt;', '&gt;'),
+        $content);
       $vars['themed_rows'][$num][$field] = $content;
     }
   }
 
   foreach ($vars['header'] as $field => $header) {
     // If there is no field label, use 'no name'.
-    if (empty($header)) {
-      $header = 'no name';
-    }
+    $vars['xml_tag'][$field] = !empty($header) ? $header : 'no name';
     if ($vars['options']['transform']) {
       switch ($vars['options']['transform_type']) {
         case 'dash':
@@ -460,12 +438,6 @@ function _views_data_export_xml_tag_clean($tag) {
   // Need to trim invalid characters from the start of the string:
   $tag = ltrim($tag, $invalid_start_chars);
 
-  // As a last line of defense, if we've stripped out everything, set it to
-  // something.
-  if (empty($tag)) {
-    $tag = 'invalid-tag-name';
-  }
-
   return $tag;
 }
 
@@ -491,7 +463,6 @@ function _views_data_export_header_shared_preprocess(&$vars) {
 function _views_data_export_body_shared_preprocess(&$vars) {
   $view     = $vars['view'];
   $fields   = &$view->field;
-  $hide_empty_support = !empty($vars['hide_empty_support']);
 
   $rows = $vars['rows'];
 
@@ -502,15 +473,7 @@ function _views_data_export_body_shared_preprocess(&$vars) {
 
     foreach ($keys as $id) {
       if (empty($fields[$id]->options['exclude'])) {
-        $content = $view->style_plugin->rendered_fields[$num][$id];
-
-        if ($hide_empty_support && !empty($fields[$id]->options['hide_empty'])) {
-          if ($fields[$id]->is_value_empty($content, $fields[$id]->options['empty_zero'])) {
-            continue;
-          }
-        }
-
-        $vars['themed_rows'][$num][$id] = $content;
+        $vars['themed_rows'][$num][$id] = $view->style_plugin->rendered_fields[$num][$id];
       }
     }
   }

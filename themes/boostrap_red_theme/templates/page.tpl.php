@@ -44,6 +44,14 @@
                 <?php if (!empty($page['navigation'])): ?>
                   <?php print render($page['navigation']); ?>
                 <?php endif; ?>
+                <!--<ul class="menu nav">
+                  <li class="first leaf active">
+                    <a href="#">Inbox</a>
+                  </li>
+                  <li class="last leaf">
+                    <a href="#">Logout</a>
+                  </li>
+                </ul>-->
               </nav>
             </div>
           <?php endif; ?>
@@ -125,7 +133,7 @@
 
           <div class="span4 pull-left">
             <ul class="social-links">
-              <li><a href="http://www.facebook.com" target="_blank"><img src="img/icon/24/social-icon-circle-fb.png" width="24" height="24" title="Facebook"></a></li>              <li><a href="http://www.twitter.com" target="_blank"><img src="img/icon/24/social-icon-circle-twit.png" width="24" height="24" title="Twitter"></a></li>              <li><a href="http://plus.google.com" target="_blank"><img src="img/icon/24/social-icon-circle-gplus.png" width="24" height="24" title="Google+"></a></li>             <li><a href="http://dribbble.com" target="_blank"><img src="img/icon/24/social-icon-circle-dribbble.png" width="24" height="24" title="Dribble"></a></li>             <li><a href="http://vimeo.com" target="_blank"><img src="img/icon/24/social-icon-circle-vimeo.png" width="24" height="24" title="Vimeo"></a></li>             <li><a href="http://scribo.smashingadvantage.com/feed/rss/" target="_blank"><img src="img/icon/24/social-icon-circle-rss.png" width="24" height="24" title="RSS"></a></li>            </ul>
+              <li><a href="http://www.facebook.com" target="_blank"><img src="<?php echo base_path() . path_to_theme(); ?>img/icon/24/social-icon-circle-fb.png" width="24" height="24" title="Facebook"></a></li>              <li><a href="http://www.twitter.com" target="_blank"><img src="img/icon/24/social-icon-circle-twit.png" width="24" height="24" title="Twitter"></a></li>              <li><a href="http://plus.google.com" target="_blank"><img src="img/icon/24/social-icon-circle-gplus.png" width="24" height="24" title="Google+"></a></li>             <li><a href="http://dribbble.com" target="_blank"><img src="img/icon/24/social-icon-circle-dribbble.png" width="24" height="24" title="Dribble"></a></li>             <li><a href="http://vimeo.com" target="_blank"><img src="img/icon/24/social-icon-circle-vimeo.png" width="24" height="24" title="Vimeo"></a></li>             <li><a href="http://scribo.smashingadvantage.com/feed/rss/" target="_blank"><img src="img/icon/24/social-icon-circle-rss.png" width="24" height="24" title="RSS"></a></li>            </ul>
           </div>
 
           <div class="span8">
