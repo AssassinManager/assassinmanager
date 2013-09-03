@@ -35,15 +35,58 @@
           <?php if (!empty($primary_nav) || !empty($secondary_nav) || !empty($page['navigation'])): ?>
             <div class="nav-collapse collapse">
               <nav role="navigation">
-                <?php if (!empty($primary_nav)): ?>
-                  <?php print render($primary_nav); ?>
-                <?php endif; ?>
-                <?php if (!empty($secondary_nav)): ?>
-                  <?php print render($secondary_nav); ?>
-                <?php endif; ?>
-                <?php if (!empty($page['navigation'])): ?>
-                  <?php print render($page['navigation']); ?>
-                <?php endif; ?>
+                <?php //if (!empty($primary_nav)): ?>
+                  <?php //print render($primary_nav); ?>
+                <?php //endif; ?>
+                <?php //if (!empty($secondary_nav)): ?>
+                  <?php //print render($secondary_nav); ?>
+                <?php //endif; ?>
+                <?php //if (!empty($page['navigation'])): ?>
+                  <?php //print render($page['navigation']); ?>
+                <?php //endif; ?>
+                <?php global $user; ?>
+                <ul class="menu nav">
+                  <?php if (in_array('Organizer', array_values($user->roles))) { ?>
+                    <li class="first leaf">
+                      <a href="#">Game</a>
+                    </li>
+                    <li class="leaf">
+                      <a href="#">Leaderboard</a>
+                    </li>
+                    <li class="leaf">
+                      <a href="#">Inbox</a>
+                    </li>
+                    <li class="leaf">
+                      <a href="#">Edit Game</a>
+                    </li>
+                    <li class="last leaf">
+                      <a href="#">Edit Profile</a>
+                    </li>
+                  <?php } else if(in_array('Player', array_values($user->roles))) { ?>
+                    <li class="first leaf">
+                      <a href="#">Profile</a>
+                    </li>
+                    <li class="leaf">
+                      <a href="#">Inbox</a>
+                    </li>
+                    <li class="leaf">
+                      <a href="#">Leaderboard</a>
+                    </li>
+                    <li class="leaf">
+                      <a href="#">Edit Profile</a>
+                    </li>
+                    <li class="last leaf">
+                      <a href="#">Logoff</a>
+                    </li>
+                  <?php } else { ?>
+                    <li class="first leaf">
+                      <a href="#">Home</a>
+                    </li>
+                    <li class="last leaf">
+                      <a href="#">Logoff</a>
+                    </li>
+                  <?php } ?>
+                </ul>
                 <!--<ul class="menu nav">
                   <li class="first leaf active">
                     <a href="#">Inbox</a>
