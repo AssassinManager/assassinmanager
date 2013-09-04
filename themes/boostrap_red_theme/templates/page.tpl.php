@@ -1,3 +1,25 @@
+<?php
+
+
+  function get_game2() {
+     $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'game', '=')
+        ->execute()
+        ->fetch();
+
+    if (!isset($query->nid)) return NULL;
+
+    return $query->nid;
+  }
+
+  global $gameid;
+  $gameid = get_game2();
+
+
+?>
+
+
   <!-- Header Section -->
   <div id="header-wrapper" class="navbar navbar-static-top">
     <div class="navbar-inner">
@@ -48,42 +70,45 @@
                 <ul class="menu nav">
                   <?php if (in_array('Organizer', array_values($user->roles))) { ?>
                     <li class="first leaf">
-                      <a href="#">Game</a>
+                      <a href="?q=node/<?php echo $gameid; ?>">Game</a>
                     </li>
                     <li class="leaf">
                       <a href="#">Leaderboard</a>
                     </li>
                     <li class="leaf">
-                      <a href="#">Inbox</a>
+                      <a href="?q=messages">Inbox</a>
                     </li>
                     <li class="leaf">
-                      <a href="#">Edit Game</a>
+                      <a href="?q=node/<?php echo $gameid; ?>/edit">Edit Game</a>
+                    </li>
+                    <li class="leaf">
+                      <a href="?q=user/<?php echo $user->uid ?>/edit">Edit Profile</a>
                     </li>
                     <li class="last leaf">
-                      <a href="#">Edit Profile</a>
+                      <a href="?q=user/logout">Logoff</a>
                     </li>
                   <?php } else if(in_array('Player', array_values($user->roles))) { ?>
                     <li class="first leaf">
-                      <a href="#">Profile</a>
+                      <a href="?q=user/<?php echo $user->uid ?>">Profile</a>
                     </li>
                     <li class="leaf">
-                      <a href="#">Inbox</a>
+                      <a href="?q=messages">Inbox</a>
                     </li>
                     <li class="leaf">
                       <a href="#">Leaderboard</a>
                     </li>
                     <li class="leaf">
-                      <a href="#">Edit Profile</a>
+                      <a href="?q=user/<?php echo $user->uid ?>/edit">Edit Profile</a>
                     </li>
                     <li class="last leaf">
-                      <a href="#">Logoff</a>
+                      <a href="?q=user/logout">Logoff</a>
                     </li>
                   <?php } else { ?>
                     <li class="first leaf">
-                      <a href="#">Home</a>
+                      <a href="/">Home</a>
                     </li>
                     <li class="last leaf">
-                      <a href="#">Logoff</a>
+                      <a href="?q=user/logout">Logoff</a>
                     </li>
                   <?php } ?>
                 </ul>
