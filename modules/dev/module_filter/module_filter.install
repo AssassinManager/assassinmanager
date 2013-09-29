@@ -28,12 +28,10 @@ function module_filter_update_7100() {
 }
 
 /**
- * Rebuild the menu and theme registry.
+ * Rebuild the menu.
  */
 function module_filter_update_7200() {
   menu_rebuild();
-  system_rebuild_theme_data();
-  drupal_theme_rebuild();
 }
 
 /**
