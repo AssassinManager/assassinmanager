@@ -1,4 +1,4 @@
-name = Bootstrap
+name = Bootstrap Red
 description = Built to use Bootstrap, a sleek, intuitive, and powerful front-end framework for faster and easier web development.
 core = 7.x
 regions[navigation]     = 'Navigation'
@@ -52,8 +52,9 @@ exclude[css][] = 'modules/update/update.css'
 exclude[css][] = 'modules/user/user.css'
 
 ; Information added by drupal.org packaging script on 2013-06-25
-version = "7.x-2.1"
+; Information changed by Alex Jewell on 2013-10-01
+version = "1"
 core = "7.x"
-project = "bootstrap"
+project = "bootstrap_red"
 datestamp = "1372204551"
 
