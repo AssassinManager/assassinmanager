@@ -1,7 +1,7 @@
-name = Bootstrap Sub-theme
-description = A Bootstrap Sub-theme.
+name = Bootstrap Red Sub-theme
+description = A Bootstrap Red Sub-theme.
 core = 7.x
-base theme = bootstrap
+base theme = bootstrap_red
 
 ; Regions
 regions[navigation]     = 'Navigation'
